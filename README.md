@@ -1,111 +1,130 @@
-🏕️ Smart Camp Advisor (Jateng & DIY)
-Sistem Rekomendasi Camping Ground Cerdas Berbasis Hybrid AI (Word2Vec + Scorecard)
+# 🏕️ Smart Camp Advisor (Jateng & DIY)
 
-Project ini adalah sistem pencarian dan rekomendasi tempat camping yang tidak hanya mencocokkan kata kunci, tetapi memahami konteks bahasa (Semantic Search) menggunakan NLP Word2Vec. Sistem ini juga dilengkapi dengan analisis sentimen otomatis untuk menilai kualitas fasilitas (Toilet, Akses, Pemandangan) berdasarkan ulasan nyata pengguna Google Maps.
+**Sistem Rekomendasi Tempat Camping Cerdas Berbasis Hybrid AI (Word2Vec + Scorecard)**
 
-🚀 Fitur Unggulan (Key Features)
-Project ini telah melalui pembaruan besar (V6.0) dengan fitur-fitur berikut:
+Project ini adalah platform pencarian tempat camping yang menggabungkan kecerdasan buatan (**NLP Word2Vec**) dengan analisis data terstruktur (**Scorecard System**). Sistem ini dirancang untuk memahami konteks pencarian pengguna (bukan sekadar kata kunci) dan memberikan wawasan mendalam mengenai kualitas fasilitas berdasarkan ulasan nyata di Google Maps.
 
-1. 🧠 Hybrid Search Engine (AI + Logic)
-Semantic Search: Menggunakan Word2Vec untuk memahami query. User mencari "tempat sejuk", AI akan merekomendasikan tempat dengan ulasan "dingin", "asri", atau "berkabut".
+---
 
-Intent Detection: Otomatis mendeteksi niat user (misal: "Cocok untuk keluarga", "Adventure", "Murah").
+## 🚀 Fitur Unggulan (Key Features)
 
-Region Filtering: Otomatis mendeteksi jika user membatasi pencarian wilayah (misal: "di Sleman", "di Kulonprogo").
+### 1. 🧠 Hybrid Search Engine (Semantic + Context)
+* **Pencarian Semantik:** Menggunakan model **Word2Vec** untuk memahami makna kata. Jika pengguna mencari *"tempat sejuk"*, sistem akan merekomendasikan tempat dengan ulasan *"dingin"*, *"berkabut"*, atau *"asri"*.
+* **Intent & Region Detection:** Otomatis mendeteksi niat pengguna (misal: "untuk keluarga", "adventure") dan memfilter wilayah (misal: "di Sleman", "di Semarang").
 
-2. 📊 Automated Scorecard & Insight
-Rapor Kualitas: Menganalisis ribuan ulasan untuk memberikan skor bintang (1-5) pada aspek spesifik: Toilet, Akses Jalan, Pemandangan, dan Pelayanan.
+### 2. 📊 Smart Scorecard & Insight
+* **Rapor Kualitas:** Menganalisis sentimen ulasan untuk memberikan skor (1-5) pada aspek krusial: **Toilet, Akses Jalan, Pemandangan, dan Pelayanan**.
+* **AI Insight:** Memberikan ringkasan singkat satu kalimat mengenai keunikan tempat tersebut.
+* **Badges:** Label otomatis seperti *"Ramah Anak"*, *"Cocok untuk Pemula"*, dll.
 
-AI Insight: Menghasilkan ringkasan satu kalimat ("Kata AI") tentang keunikan tempat tersebut.
+### 3. 💰 Estimasi Biaya Cerdas (Smart Costing)
+* **Kategorisasi Harga:** Membaca data harga mentah dan memilahnya menjadi 4 kategori: **Biaya Wajib (Tiket/Parkir), Sewa Pokok (Tenda), Sewa Mewah, dan Layanan**.
+* **Kalkulator Dasar:** Otomatis menghitung estimasi biaya minimal (Tiket Termurah + Parkir) untuk membantu perencanaan budget pengguna.
 
-Smart Badges: Memberikan label otomatis seperti "Ramah Keluarga", "Cocok untuk Pemula", dll.
+### 4. ⚙️ Automation Pipeline
+* **Pusat Kendali Otomatis:** Script `pipeline.py` menangani seluruh siklus hidup data: dari Scraping -> Cleaning -> Training AI -> hingga Deployment.
+* **Single Source Data:** Data terpusat di `info_tempat.csv` dan `corpus_master.csv` untuk menjaga konsistensi informasi.
 
-3. 💰 Estimasi Biaya Cerdas
-Kategorisasi Otomatis: Sistem membaca data harga mentah dan mengelompokkannya menjadi: Wajib (Tiket/Parkir), Sewa Pokok, Sewa Mewah, dan Layanan.
+### 5. 💻 Modern Admin Dashboard
+* **Analitik Pencarian:** Memantau kata kunci yang paling sering dicari dan wilayah favorit pengguna secara *real-time*.
+* **Manajemen Data:** Melihat total database tempat yang terdaftar.
 
-Kalkulator Dasar: Otomatis menghitung estimasi biaya minimal (Tiket Termurah + Parkir Motor) untuk memudahkan user merencanakan budget.
+---
 
-4. ⚙️ Automation Pipeline
-End-to-End Automation: Script pipeline.py mengatur seluruh proses dari Scraping -> Cleaning -> Training AI -> Web Deployment.
+## 🛠️ Teknologi (Tech Stack)
 
-Single Source of Truth: Data terpusat di info_tempat.csv dan corpus_master.csv, mencegah duplikasi dan inkonsistensi data.
+* **Bahasa:** Python 3.10+
+* **Frontend:** Streamlit (dengan Custom CSS Glassmorphism)
+* **Machine Learning:** Gensim (Word2Vec), Scikit-Learn (Cosine Similarity)
+* **NLP Preprocessing:** Sastrawi (Stemming Bahasa Indonesia), NLTK
+* **Data Scraper:** Playwright (Google Maps Reviews & Metadata)
+* **Data Processing:** Pandas, NumPy
 
-5. 💻 Modern Web UI
-Glassmorphism Design: Antarmuka modern dengan background transparan dan responsif.
+---
 
-Admin Dashboard: Panel khusus (Password: 1234) untuk memantau statistik pencarian user (Query populer, Wilayah favorit).
+## 📂 Struktur Project
 
-🛠️ Teknologi yang Digunakan
-Language: Python 3.10+
+Berikut adalah anatomi file dalam project ini:
 
-Web Framework: Streamlit
-
-NLP & AI: Gensim (Word2Vec), Scikit-Learn (Cosine Similarity), Sastrawi (Stemming).
-
-Data Processing: Pandas, NumPy.
-
-Scraping: Playwright (Google Maps Reviews & Metadata).
-
-📂 Struktur Project
-Plaintext
-
+```plaintext
 📦 Root/
-├── 📜 pipeline.py             # [COMMANDER] Pusat kendali otomatisasi (Run this first!)
-├── 📜 streamlit_app.py        # [FRONTEND] Aplikasi web utama
-├── 📜 clean_data.py           # [CLEANER] Modul pembersih teks
-├── 📜 train_w2v.py            # [TEACHER] Modul pelatih otak AI
+├── 📜 pipeline.py             # [COMMANDER] Pusat kendali otomatisasi (Jalankan ini!)
+├── 📜 streamlit_app.py        # [FRONTEND] Website utama (UI)
+├── 📜 clean_data.py           # [CLEANER] Modul pembersih teks ulasan
+├── 📜 train_w2v.py            # [TEACHER] Modul pelatih model AI
 │
-├── 📂 Asisten/                # [WORKERS] Skrip scraping & generator data
-│   ├── scraper_gmaps.py       # Scrape ulasan
-│   ├── scraper_metadata.py    # Scrape foto/info
-│   ├── konversi_data.py       # Integrasi data harga/fasilitas
-│   └── scorecard_generator.py # Analisis sentimen/rapor
+├── 📂 Asisten/                # [WORKERS] Skrip pendukung (Backend Workers)
+│   ├── scraper_gmaps.py       # Robot scraping ulasan
+│   ├── scraper_metadata.py    # Robot scraping foto & info
+│   ├── konversi_data.py       # Integrator data harga & fasilitas
+│   └── scorecard_generator.py # Analis sentimen & pembuat rapor
 │
-├── 📂 src/                    # [BRAIN] Logika inti
-│   ├── mesin_pencari.py       # Search Engine logic
-│   ├── preprocessing.py       # Text processing
-│   └── utils.py               # Helper functions
+├── 📂 src/                    # [BRAIN] Logika Inti
+│   ├── mesin_pencari.py       # Logika search engine & ranking
+│   ├── preprocessing.py       # Pembersih teks & deteksi intent
+│   └── utils.py               # Fungsi bantuan (Logging, Parsing)
 │
-├── 📂 Documents/              # [DATABASE] Data CSV & JSON
+├── 📂 Documents/              # [DATABASE] Penyimpanan Data
 │   ├── corpus_master.csv      # Dataset ulasan bersih
-│   ├── info_tempat.csv        # Database utama tempat
-│   ├── scorecards.json        # Hasil analisis rapor
-│   └── input_harga.csv        # (Input Manual) Data harga
+│   ├── info_tempat.csv        # Database utama (Single Source of Truth)
+│   ├── scorecards.json        # Hasil analisis rapor AI
+│   └── input_harga.csv        # (Input Manual) Data harga mentah
 │
-└── 📂 Assets/                 # [MEMORY] Model AI Binary
+└── 📂 Assets/                 # [MEMORY] Model Biner
     └── word2vec.model         # Otak AI yang sudah dilatih
+```
+
 🚀 Cara Menjalankan (Installation)
 1. Persiapan Environment
-Pastikan Python sudah terinstall. Disarankan menggunakan Virtual Environment.
+Pastikan Python sudah terinstall. Gunakan Virtual Environment agar lebih rapi.
 
-Bash
-
+```
 # Clone repository
-git clone https://github.com/username/camp-advisor.git
-cd camp-advisor
+git clone [https://github.com/username/project-kemah.git](https://github.com/username/project-kemah.git)
+cd project-kemah
 
-# Buat Virtual Environment (Opsional tapi Recommended)
+# Buat Virtual Environment
 python -m venv .venv
-# Windows:
+
+# Aktifkan (Windows)
 .venv\Scripts\activate
-# Mac/Linux:
+# Aktifkan (Mac/Linux)
 source .venv/bin/activate
-2. Install Dependencies
-Bash
+```
 
+2. Install Library
+
+```
 pip install -r requirements.txt
-playwright install  # Wajib untuk scraper
+playwright install  # Wajib untuk scraper berjalan
+```
+
 3. Jalankan Aplikasi
-Ada dua cara untuk menjalankan sistem ini:
+Gunakan pipeline.py sebagai pintu masuk utama untuk kemudahan manajemen.
 
-Cara A: Jalankan Website Saja (Jika data sudah siap)
-
-Bash
-
-streamlit run streamlit_app.py
-Cara B: Jalankan Pipeline (Untuk update data/model)
-
-Bash
-
+```
 python pipeline.py
-Pilih menu yang tersedia (Scraping, Update AI, atau Run Web).
+```
+Akan muncul menu interaktif:
+
+Menu 1: Tambah data baru (Scraping).
+
+Menu 2: Update Otak AI (Cleaning -> Training -> Scoring).
+
+Menu 4: Jalankan Website.
+
+Jika ingin menjalankan website langsung tanpa pipeline:
+
+```
+streamlit run streamlit_app.py
+```
+
+🔐 Akses Admin
+Fitur dashboard admin terletak di Sidebar (sebelah kiri) pada aplikasi web.
+
+Password Default: 1234
+
+📝 Catatan Penting
+Model AI: File model (Assets/word2vec.model) di-ignore oleh git untuk mencegah konflik versi library. Silakan jalankan Menu 2 (Update Otak AI) di pipeline.py saat pertama kali clone repo ini.
+
+Browser Session: Folder cache browser (hasil scraping) otomatis diabaikan agar repo tetap ringan.
