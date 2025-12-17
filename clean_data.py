@@ -1,156 +1,155 @@
 import pandas as pd
 import os
 import re
+from datetime import datetime, timedelta
+import dateutil.relativedelta
 
 # ================= KONFIGURASI =================
-ROOT_FOLDER = 'Data_Mentah'
-OUTPUT_STAGING = os.path.join('Documents', 'corpus_staging.csv')
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+RAW_DIR = os.path.join(BASE_DIR, 'Data_Mentah')
+DOCS_DIR = os.path.join(BASE_DIR, 'Documents')
+OUTPUT_FILE = os.path.join(DOCS_DIR, 'corpus_staging.csv')
 
-# 1. Daftar Kata Kunci "Alam Abadi"
-# Jika ulasan (baru/lama) mengandung kata ini, ulasan DIJAMIN MASUK.
-NATURE_KEYWORDS = [
-    'dingin', 'sejuk', 'kabut', 'asri', 'alami', 'pemandangan', 'view',
-    'gunung', 'bukit', 'sungai', 'hutan', 'pinus', 'tenda', 'camping',
-    'kemah', 'bintang', 'sunrise', 'sunset', 'jalan', 'akses', 'tanjakan',
-    'adem', 'tenang', 'damai', 'kabut'
-]
+STOPWORDS = set([
+    'dan', 'di', 'ke', 'dari', 'yang', 'ini', 'itu', 'untuk', 'pada', 
+    'adalah', 'dengan', 'saya', 'aku', 'kami', 'kita', 'karena', 'yg', 
+    'tdk', 'gak', 'ga', 'aja', 'saja', 'bgt', 'banget', 'dah', 'nih', 
+    'tuh', 'dong', 'sih', 'kok'
+])
 
-# 2. Daftar Kata Khas Owner (Harus Dibuang)
-OWNER_PHRASES = [
-    'terimakasih', 'terima kasih', 'thank you', 'thanks', 
-    'ditunggu kedatangannya', 'salam sehat', 'matur nuwun', 
-    'semoga sehat', 'berkunjung kembali', 'owner', 'pengelola',
-    'management', 'manajemen', 'kakak', 'kak'
-]
-
-def get_strict_rating(val):
-    """Membersihkan format rating menjadi angka 1-5"""
-    if pd.isna(val): return None
-    val_str = str(val).lower().strip()
-    match = re.search(r'(\d)(\s?/\s?5|\s?bintang|\s?stars)?', val_str)
-    if match: return float(match.group(1))
-    elif re.match(r'^[1-5](\.\d)?$', val_str): return float(val_str)
-    return None
-
-def is_quality_review(text):
-    """ 
-    Logika Filter Cerdas:
-    1. Buang Balasan Owner.
-    2. Selamatkan ulasan (meski pendek/lama) jika mengandung kata alam.
-    3. Buang ulasan sampah/terlalu pendek tanpa konteks.
+def convert_relative_time(row):
     """
-    if not isinstance(text, str): return False
-    text_lower = text.lower().strip()
+    Mengubah '2 bulan lalu' menjadi 'YYYY-MM-DD'.
+    Menggunakan 'Tanggal_Scrap' sebagai patokan jika ada.
+    Jika tidak ada, menggunakan hari ini (Fallback).
+    """
+    relative_time = row.get('Waktu')
+    scrap_date_str = row.get('Tanggal_Scrap')
     
-    # --- ATURAN 1: Pastikan Bukan Balasan Owner ---
-    # Jika mengandung kata owner, kita cek lebih ketat
-    is_owner_suspect = False
-    for phrase in OWNER_PHRASES:
-        if phrase in text_lower:
-            is_owner_suspect = True
-            break
+    if pd.isna(relative_time):
+        return None
+    
+    # Tentukan Patokan (Anchor Date)
+    anchor_date = datetime.now() # Default hari ini
+    if pd.notna(scrap_date_str):
+        try:
+            # Coba parsing tanggal scrap dari CSV
+            anchor_date = datetime.strptime(str(scrap_date_str), '%Y-%m-%d')
+        except:
+            pass # Kalau format salah, tetap pakai hari ini
+    
+    text = str(relative_time).lower().strip()
+    
+    try:
+        # Pola 1: Angka + Satuan (Contoh: "2 tahun lalu")
+        match = re.search(r'(\d+)\s+(tahun|bulan|minggu|hari|jam|menit|detik)', text)
+        if match:
+            value = int(match.group(1))
+            unit = match.group(2)
             
-    if is_owner_suspect:
-        # Jika teks mengandung kata owner DAN tidak ada kata "saya/aku", kemungkinan besar owner
-        if not any(x in text_lower for x in ['saya', 'aku', 'gue', 'kami', 'kita', 'buat']):
-            return False # REJECT (Ini Owner)
+            if unit == 'tahun':
+                date_obj = anchor_date - dateutil.relativedelta.relativedelta(years=value)
+            elif unit == 'bulan':
+                date_obj = anchor_date - dateutil.relativedelta.relativedelta(months=value)
+            elif unit == 'minggu':
+                date_obj = anchor_date - timedelta(weeks=value)
+            elif unit == 'hari':
+                date_obj = anchor_date - timedelta(days=value)
+            else:
+                date_obj = anchor_date
+            
+            return date_obj.strftime('%Y-%m-%d')
 
-    # --- ATURAN 2: "Nature Protection" (Penyelamat Data Lama) ---
-    # Cek apakah ulasan mengandung kata kunci alam?
-    has_nature_context = any(word in text_lower for word in NATURE_KEYWORDS)
-    
-    if has_nature_context:
-        return True # ACCEPT (Simpan! Ini data berharga untuk Word2Vec)
+        # Pola 2: Kata Satuan
+        if 'setahun' in text:
+            return (anchor_date - dateutil.relativedelta.relativedelta(years=1)).strftime('%Y-%m-%d')
+        elif 'sebulan' in text:
+            return (anchor_date - dateutil.relativedelta.relativedelta(months=1)).strftime('%Y-%m-%d')
+        elif 'seminggu' in text:
+            return (anchor_date - timedelta(weeks=1)).strftime('%Y-%m-%d')
+        elif 'sehari' in text or 'kemarin' in text:
+            return (anchor_date - timedelta(days=1)).strftime('%Y-%m-%d')
+        elif 'baru saja' in text or 'menit' in text or 'jam' in text:
+            return anchor_date.strftime('%Y-%m-%d')
+            
+    except Exception:
+        return anchor_date.strftime('%Y-%m-%d')
 
-    # --- ATURAN 3: Filter Sampah Standar ---
-    # Jika TIDAK ada konteks alam, kita seleksi ketat berdasarkan panjang
-    
-    # Hapus jika cuma simbol
-    if not re.search('[a-zA-Z]', text_lower): return False
-    
-    # Hapus jika terlalu pendek (kurang dari 15 huruf) DAN tidak ada konteks alam
-    # Contoh yang dibuang: "Mantap", "Ok gan", "Good place", "Jos gandos"
-    # Kenapa dibuang? Karena AI tidak belajar apa-apa dari kata "Ok" untuk rekomendasi camping.
-    if len(text_lower) < 15:
-        return False 
+    return anchor_date.strftime('%Y-%m-%d')
 
-    return True # ACCEPT (Ulasan panjang umum)
+def clean_text(text):
+    if pd.isna(text): return ""
+    text = str(text).lower()
+    text = re.sub(r'[^\w\s]', ' ', text)
+    text = re.sub(r'\d+', '', text)
+    words = text.split()
+    words = [w for w in words if w not in STOPWORDS and len(w) > 2]
+    return " ".join(words)
 
-def clean_data_hybrid():
-    print("🛡️ [CLEANING FINAL] Menggabungkan Data Baru + Data Lama Relevan...")
+def run_cleaning_pipeline():
+    print("--- 🧹 MEMULAI PEMBERSIHAN DATA (CLEANING) ---")
     
     all_data = []
-    total_files = 0
     
-    for root, dirs, files in os.walk(ROOT_FOLDER):
-        for filename in files:
-            if not filename.endswith(".csv"): continue
-            
-            total_files += 1
-            file_path = os.path.join(root, filename)
-            folder_name = os.path.basename(root)
-            lokasi_fix = folder_name if folder_name != ROOT_FOLDER else "Jogja/Jateng"
-            nama_tempat = filename.replace('.csv', '').replace('_', ' ').title()
-            
-            try:
-                df = pd.read_csv(file_path)
-                
-                # Cari kolom teks
-                col_text = next((c for c in ['wiI7pd', 'Teks_Mentah', 'review_text', 'teks'] if c in df.columns), None)
-                col_rating = next((c for c in df.columns if 'rating' in c.lower() or 'Rating' in c), None)
+    if not os.path.exists(RAW_DIR):
+        print(f"❌ Folder {RAW_DIR} tidak ditemukan!")
+        return False
 
-                if not col_text: continue
-                
-                # Drop baris kosong
-                df = df.dropna(subset=[col_text])
-
-                count_kept = 0
-                for _, row in df.iterrows():
-                    teks = str(row[col_text])
+    for root, dirs, files in os.walk(RAW_DIR):
+        for file in files:
+            if file.endswith(".csv"):
+                filepath = os.path.join(root, file)
+                try:
+                    df = pd.read_csv(filepath)
                     
-                    # === INI FILTERNYA ===
-                    if is_quality_review(teks):
-                        
-                        # Ambil Rating
-                        rating = 0
-                        if col_rating:
-                            r_val = get_strict_rating(row[col_rating])
-                            if r_val: rating = r_val
-                        
-                        all_data.append({
-                            'Nama_Tempat': nama_tempat,
-                            'Lokasi': lokasi_fix,
-                            'Rating': rating,
-                            'Teks_Mentah': teks
-                        })
-                        count_kept += 1
-                
-                # Feedback per file (biar tau progress)
-                # print(f"   -> {nama_tempat}: {count_kept} ulasan disimpan.")
-                
-            except Exception: pass
+                    folder_name = os.path.basename(root)
+                    file_name = os.path.splitext(file)[0]
+                    
+                    df['Nama_Tempat'] = file_name
+                    df['Lokasi'] = folder_name
+                    
+                    all_data.append(df)
+                    print(f"   📄 Terbaca: {file_name} ({len(df)} baris)")
+                except Exception as e:
+                    print(f"   ⚠️ Gagal baca {file}: {e}")
 
-    # --- SIMPAN HASIL AKHIR ---
-    if all_data:
-        df_final = pd.DataFrame(all_data)
-        
-        # Hapus duplikat persis (Jika scraper mengambil data yang sama 2x)
-        df_final.drop_duplicates(subset=['Teks_Mentah'], inplace=True)
-        
-        # Beri ID Dokumen
-        df_final.reset_index(drop=True, inplace=True)
-        df_final.insert(0, 'Doc_ID', range(1, len(df_final) + 1))
-        
-        os.makedirs('Documents', exist_ok=True)
-        df_final.to_csv(OUTPUT_STAGING, index=False)
-        
-        print("\n" + "="*50)
-        print(f"✅ CLEANING SELESAI!")
-        print(f"📊 Total Ulasan Berkualitas: {len(df_final)}")
-        print(f"📂 Disimpan di: {OUTPUT_STAGING}")
-        print("="*50)
-    else:
-        print("❌ Tidak ada data yang lolos filter.")
+    if not all_data:
+        print("❌ Tidak ada data CSV yang ditemukan.")
+        return False
+
+    # Gabung Semua
+    df_master = pd.concat(all_data, ignore_index=True)
+    
+    # Pastikan kolom Tanggal_Scrap ada (untuk file lama yg belum punya)
+    if 'Tanggal_Scrap' not in df_master.columns:
+        df_master['Tanggal_Scrap'] = None
+
+    print(f"📊 Total Data Mentah: {len(df_master)} baris")
+
+    # KONVERSI WAKTU (MENGGUNAKAN JANGKAR TANGGAL SCRAP)
+    print("⏳ Mengonversi 'Waktu Relatif' -> 'Tanggal Pasti' (Freeze Time)...")
+    
+    # Kita kirim SATU BARIS (row) ke fungsi, bukan cuma kolom waktunya
+    # Agar fungsi bisa baca kolom 'Waktu' DAN 'Tanggal_Scrap' di baris yg sama
+    df_master['Waktu'] = df_master.apply(convert_relative_time, axis=1)
+
+    print("🧼 Membersihkan teks ulasan...")
+    df_master['Teks_Bersih'] = df_master['Teks_Mentah'].apply(clean_text)
+    
+    df_master.dropna(subset=['Teks_Bersih'], inplace=True)
+    df_master = df_master[df_master['Teks_Bersih'].str.len() > 5]
+    df_master.drop_duplicates(subset=['Nama_Tempat', 'Teks_Mentah'], inplace=True)
+
+    # Simpan
+    final_cols = ['Nama_Tempat', 'Lokasi', 'Rating', 'Teks_Mentah', 'Waktu']
+    df_staging = df_master[final_cols]
+    
+    os.makedirs(DOCS_DIR, exist_ok=True)
+    df_staging.to_csv(OUTPUT_FILE, index=False)
+    
+    print(f"✅ Data bersih tersimpan: {OUTPUT_FILE}")
+    print(f"📊 Total Data Bersih: {len(df_staging)} baris")
+    return True
 
 if __name__ == "__main__":
-    clean_data_hybrid()
+    run_cleaning_pipeline()

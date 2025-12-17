@@ -77,7 +77,7 @@ def merge_staging_to_master():
     df_combined['Doc_ID'] = range(1, len(df_combined) + 1)
     
     # Pastikan urutan kolom rapi
-    cols = ['Doc_ID', 'Nama_Tempat', 'Lokasi', 'Rating', 'Teks_Mentah']
+    cols = ['Doc_ID', 'Nama_Tempat', 'Lokasi', 'Rating', 'Teks_Mentah', 'Waktu']
     # Filter hanya kolom yang ada (jaga-jaga kalau ada kolom ekstra)
     cols = [c for c in cols if c in df_combined.columns]
     df_combined = df_combined[cols]

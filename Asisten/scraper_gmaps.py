@@ -3,6 +3,8 @@ import time
 import os
 import re
 import shutil
+import random 
+from datetime import datetime
 from playwright.sync_api import sync_playwright
 
 # ================= KONFIGURASI =================
@@ -11,6 +13,10 @@ BASE_OUTPUT_DIR = os.path.join(os.path.dirname(CURRENT_DIR), "Data_Mentah")
 USER_DATA_DIR = os.path.join(CURRENT_DIR, "chrome_session")
 DEFAULT_MAX = 3000 
 AUTOSAVE_INTERVAL = 100
+
+# [BARU] Konfigurasi Scroll
+SCROLL_BATCH_SIZE = 4  # Berapa kali scroll sebelum berhenti untuk ambil data
+SCROLL_PIXEL = 600     # Jarak pixel sekali scroll (jangan terlalu besar biar gak loncat)
 
 OWNER_KEYWORDS = [
     "terimakasih", "terima kasih", "thank you", "thanks", 
@@ -85,7 +91,7 @@ def apply_sorting_newest(page):
     return False
 
 def scrape_reviews():
-    print("--- 🕵️‍♂️ GMAPS SCRAPER V7.9 (Priority Save Fix) ---")
+    print("--- 🕵️‍♂️ GMAPS SCRAPER V8.2 (Batch Scroll + Precise Click) ---")
     
     nama_file = input("1. Nama Tempat: ").strip()
     if not nama_file: return
@@ -108,12 +114,14 @@ def scrape_reviews():
     if not os.path.exists(output_csv):
         with open(output_csv, 'w', newline='', encoding='utf-8') as f:
             writer = csv.writer(f)
-            writer.writerow(['Rating', 'Waktu', 'Teks_Mentah'])
+            writer.writerow(['Rating', 'Waktu', 'Teks_Mentah', 'Tanggal_Scrap']) 
     
     print("-" * 40)
     print(f"🚀 Target: {nama_file_clean}") 
     print(f"💾 Auto-Save: ON (Tiap {AUTOSAVE_INTERVAL} data)")
-    print("💡 CARA STOP: Tekan Ctrl+C ATAU Tutup Browser langsung.")
+
+    current_date_scrap = datetime.now().strftime('%Y-%m-%d')
+    print(f"📅 Tanggal Scraping: {current_date_scrap}")
 
     with sync_playwright() as p:
         browser = p.chromium.launch_persistent_context(
@@ -125,7 +133,7 @@ def scrape_reviews():
         page = browser.pages[0]
         
         unique_reviews_hashes = set()
-        unsaved_buffer = [] # Data sementara sebelum disimpan
+        unsaved_buffer = [] 
         total_collected = 0
 
         try:
@@ -152,28 +160,48 @@ def scrape_reviews():
             if scrollable_div.count() == 0:
                 scrollable_div = page.locator('div[role="main"] > div > div:nth-child(2)').first
 
-            if scrollable_div.count() > 0: scrollable_div.hover()
-            else: page.mouse.move(300, 400)
+            if scrollable_div.count() > 0: 
+                scrollable_div.hover()
+            else: 
+                page.mouse.move(400, 400)
 
             last_count = 0
             stuck_count = 0
             
             print("⚡ Mulai mengambil data...")
 
-            # --- LOOP UTAMA ---
+            # --- LOOP UTAMA (PERBAIKAN STRATEGI) ---
             while True:
-                # 1. Scroll
-                page.mouse.wheel(0, 3000) 
-                time.sleep(1) 
                 
-                # 2. Expand
+                # [UPDATE 1: BATCH SCROLLING]
+                # Kita scroll beberapa kali DULU, baru ambil data.
+                # Ini lebih cepat dan tidak patah-patah.
+                for _ in range(SCROLL_BATCH_SIZE):
+                    page.mouse.wheel(0, SCROLL_PIXEL)
+                    # Jeda sangat pendek antar scroll (efek inertia mouse)
+                    time.sleep(random.uniform(0.1, 0.25)) 
+                
+                # Jeda agak lama setelah batch scroll selesai (biar loading tuntas)
+                time.sleep(random.uniform(0.8, 1.2))
+
+                # [UPDATE 2: PERBAIKAN TOMBOL EXPAND (BIAR GAK KLIK USER)]
                 try:
-                    expand_btns = page.locator('button').filter(has_text=re.compile(r'(Lainnya|More|Selengkapnya)', re.IGNORECASE)).all()
+                    # Kita cari tombol yang teksnya BENAR-BENAR "Lainnya" atau "More"
+                    # Dan pastikan tombol itu terlihat (visible)
+                    expand_btns = page.locator('button').filter(has_text=re.compile(r'^(Lainnya|More|Selengkapnya|See more)$', re.IGNORECASE)).all()
                     for btn in expand_btns:
-                        if btn.is_visible(): btn.click(force=True, timeout=100)
+                        if btn.is_visible():
+                            # Gunakan dispatchEvent click (bukan mouse click) agar akurat ke elemen
+                            # Ini mencegah salah klik jika layout bergeser (user profile)
+                            try:
+                                btn.dispatch_event('click')
+                            except:
+                                # Fallback jika dispatch gagal, pakai click biasa tapi hati-hati
+                                btn.click(force=True, timeout=100)
+                            time.sleep(0.05) 
                 except: pass
 
-                # 3. Extract
+                # [EKSTRAKSI DATA (SAMA SEPERTI SEBELUMNYA)]
                 visible_cards = page.locator('div.jftiEf').all()
                 for card in visible_cards:
                     try:
@@ -199,20 +227,19 @@ def scrape_reviews():
                             
                             if review_signature not in unique_reviews_hashes:
                                 unique_reviews_hashes.add(review_signature)
-                                unsaved_buffer.append([rating, time_str, text_clean]) # Masuk Buffer
+                                unsaved_buffer.append([rating, time_str, text_clean, current_date_scrap]) 
                                 total_collected += 1
                     except: continue
 
-                # 4. AUTO SAVE (PENTING!)
+                # Auto Save
                 if len(unsaved_buffer) >= AUTOSAVE_INTERVAL:
                     try:
                         with open(output_csv, 'a', newline='', encoding='utf-8') as f:
                             writer = csv.writer(f)
                             writer.writerows(unsaved_buffer)
                         print(f"   💾 Saved: {len(unsaved_buffer)} item. Total: {total_collected}")
-                        unsaved_buffer = [] # Reset buffer setelah simpan
-                    except Exception as e: 
-                        print(f"⚠️ Gagal Auto-save: {e}")
+                        unsaved_buffer = [] 
+                    except Exception as e: print(f"⚠️ Gagal Save: {e}")
 
                 print(f"   🌾 Terkumpul: {total_collected}...", end="\r")
 
@@ -220,16 +247,20 @@ def scrape_reviews():
                     print("\n✅ Target tercapai!")
                     break
 
-                # Stuck Check
+                # Stuck Check (Logika Elemen Terakhir)
                 review_cards = page.locator('div.jftiEf')
                 current_dom_count = review_cards.count()
 
                 if current_dom_count == last_count:
                     stuck_count += 1
                     if current_dom_count > 0:
-                        review_cards.last.scroll_into_view_if_needed()
+                        try:
+                            # Scroll perlahan ke elemen terakhir
+                            review_cards.last.scroll_into_view_if_needed(timeout=2000)
+                            time.sleep(1)
+                        except: pass
                     
-                    if stuck_count > 20: # Saya naikkan jadi 20 detik biar gak gampang nyerah
+                    if stuck_count > 20: 
                         print(f"\n⚠️ Tidak ada ulasan baru (Mentok). Berhenti.")
                         break
                 else:
@@ -239,38 +270,25 @@ def scrape_reviews():
                 last_count = current_dom_count
 
         except KeyboardInterrupt:
-            # INI DIA YANG ANDA CARI
             print("\n\n🛑 DETEKSI CTRL+C. Menghentikan loop...")
         
         except Exception as e:
-            # Error browser ditutup paksa
             print(f"\n⚠️ INTERUPSI: {e}")
 
         finally:
-            # --- BAGIAN KRUSIAL (PENYELAMAT DATA) ---
-            print("\n🧹 FINALISASI: Menyimpan sisa data di memori...")
-            
-            # 1. SIMPAN DATA TERLEBIH DAHULU (Sebelum tutup browser)
+            print("\n🧹 FINALISASI...")
             if unsaved_buffer:
                 try:
                     with open(output_csv, 'a', newline='', encoding='utf-8') as f:
                         writer = csv.writer(f)
                         writer.writerows(unsaved_buffer)
-                    print(f"✅ BERHASIL MENYIMPAN {len(unsaved_buffer)} data tersisa.")
+                    print(f"✅ Sisa data tersimpan.")
                 except Exception as e:
-                    print(f"❌ GAGAL MENYIMPAN SISA DATA: {e}")
-            else:
-                print("ℹ️ Semua data sudah tersimpan (Buffer kosong).")
+                    print(f"❌ Gagal simpan sisa: {e}")
 
-            print(f"📊 Total Data Akhir: {total_collected} ulasan.")
-            print(f"📂 Lokasi File: {output_csv}")
-            
-            # 2. BARU TUTUP BROWSER
-            # Kita pakai try-except kosong agar kalau macet, script tidak peduli dan tetap selesai
-            print("👋 Menutup browser...")
+            print(f"📊 Total: {total_collected}. Lokasi: {output_csv}")
             try: browser.close()
             except: pass 
-            
             print("🏁 Selesai.")
 
 if __name__ == "__main__":

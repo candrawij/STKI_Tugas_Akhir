@@ -132,15 +132,15 @@
                 "icon": "🛣️",
                 "pos": 2,
                 "neg": 3,
-                "mentions": 8,
+                "mentions": 9,
                 "score": 2.6
             },
             "view": {
                 "label": "Pemandangan Alam",
                 "icon": "🍃",
-                "pos": 17,
+                "pos": 18,
                 "neg": 1,
-                "mentions": 28,
+                "mentions": 30,
                 "score": 4.8
             },
             "kenyamanan": {
@@ -164,68 +164,70 @@
                 "icon": "⚡",
                 "pos": 3,
                 "neg": 0,
-                "mentions": 4,
+                "mentions": 5,
                 "score": 5.0
             }
         },
         "badges": [],
         "insight": "Pengunjung sangat menyukai area camping, namun perlu memperhatikan fasilitas toilet.",
-        "total_reviews": 50
+        "total_reviews": 58
     },
     "Bumi Perkemahan Desa Kajar": {
         "aspects": {
             "toilet": {
                 "label": "Fasilitas Toilet",
                 "icon": "🚽",
-                "pos": 0,
+                "pos": 2,
                 "neg": 0,
-                "mentions": 0,
-                "score": 0
+                "mentions": 11,
+                "score": 5.0
             },
             "akses": {
                 "label": "Akses & Parkir",
                 "icon": "🛣️",
-                "pos": 0,
+                "pos": 6,
                 "neg": 0,
-                "mentions": 0,
-                "score": 0
+                "mentions": 12,
+                "score": 5.0
             },
             "view": {
                 "label": "Pemandangan Alam",
                 "icon": "🍃",
-                "pos": 1,
+                "pos": 37,
                 "neg": 0,
-                "mentions": 1,
+                "mentions": 56,
                 "score": 5.0
             },
             "kenyamanan": {
                 "label": "Area Camping",
                 "icon": "⛺",
-                "pos": 0,
-                "neg": 0,
-                "mentions": 0,
-                "score": 0
+                "pos": 30,
+                "neg": 1,
+                "mentions": 49,
+                "score": 4.9
             },
             "pelayanan": {
                 "label": "Pelayanan Staff",
                 "icon": "🤝",
-                "pos": 1,
+                "pos": 15,
                 "neg": 0,
-                "mentions": 1,
+                "mentions": 26,
                 "score": 5.0
             },
             "fasilitas": {
                 "label": "Fasilitas Umum",
                 "icon": "⚡",
-                "pos": 0,
+                "pos": 1,
                 "neg": 0,
-                "mentions": 0,
-                "score": 0
+                "mentions": 8,
+                "score": 5.0
             }
         },
-        "badges": [],
-        "insight": "Belum cukup data untuk menyimpulkan.",
-        "total_reviews": 5
+        "badges": [
+            "keluarga"
+        ],
+        "insight": "Pengunjung sangat menyukai fasilitas toilet, namun perlu memperhatikan area camping.",
+        "total_reviews": 170
     },
     "Bumi Perkemahan Dewi Tinalah": {
         "aspects": {
@@ -286,6 +288,123 @@
         ],
         "insight": "Kekuatan utama tempat ini adalah fasilitas toilet yang sangat memuaskan.",
         "total_reviews": 13
+    },
+    "Bumi Perkemahan Medini": {
+        "aspects": {
+            "toilet": {
+                "label": "Fasilitas Toilet",
+                "icon": "🚽",
+                "pos": 6,
+                "neg": 1,
+                "mentions": 14,
+                "score": 4.4
+            },
+            "akses": {
+                "label": "Akses & Parkir",
+                "icon": "🛣️",
+                "pos": 7,
+                "neg": 2,
+                "mentions": 17,
+                "score": 4.1
+            },
+            "view": {
+                "label": "Pemandangan Alam",
+                "icon": "🍃",
+                "pos": 12,
+                "neg": 1,
+                "mentions": 26,
+                "score": 4.7
+            },
+            "kenyamanan": {
+                "label": "Area Camping",
+                "icon": "⛺",
+                "pos": 12,
+                "neg": 2,
+                "mentions": 19,
+                "score": 4.4
+            },
+            "pelayanan": {
+                "label": "Pelayanan Staff",
+                "icon": "🤝",
+                "pos": 11,
+                "neg": 1,
+                "mentions": 21,
+                "score": 4.7
+            },
+            "fasilitas": {
+                "label": "Fasilitas Umum",
+                "icon": "⚡",
+                "pos": 7,
+                "neg": 0,
+                "mentions": 10,
+                "score": 5.0
+            }
+        },
+        "badges": [
+            "keluarga",
+            "healing"
+        ],
+        "insight": "Pengunjung sangat menyukai fasilitas umum, namun perlu memperhatikan akses & parkir.",
+        "total_reviews": 69
+    },
+    "Bumi Perkemahan Pleseran Nglurah Tawangmangu": {
+        "aspects": {
+            "toilet": {
+                "label": "Fasilitas Toilet",
+                "icon": "🚽",
+                "pos": 79,
+                "neg": 5,
+                "mentions": 171,
+                "score": 4.8
+            },
+            "akses": {
+                "label": "Akses & Parkir",
+                "icon": "🛣️",
+                "pos": 60,
+                "neg": 6,
+                "mentions": 164,
+                "score": 4.6
+            },
+            "view": {
+                "label": "Pemandangan Alam",
+                "icon": "🍃",
+                "pos": 84,
+                "neg": 7,
+                "mentions": 177,
+                "score": 4.7
+            },
+            "kenyamanan": {
+                "label": "Area Camping",
+                "icon": "⛺",
+                "pos": 117,
+                "neg": 8,
+                "mentions": 207,
+                "score": 4.7
+            },
+            "pelayanan": {
+                "label": "Pelayanan Staff",
+                "icon": "🤝",
+                "pos": 82,
+                "neg": 7,
+                "mentions": 173,
+                "score": 4.7
+            },
+            "fasilitas": {
+                "label": "Fasilitas Umum",
+                "icon": "⚡",
+                "pos": 68,
+                "neg": 1,
+                "mentions": 134,
+                "score": 4.9
+            }
+        },
+        "badges": [
+            "keluarga",
+            "campervan",
+            "healing"
+        ],
+        "insight": "Pengunjung sangat menyukai fasilitas umum, namun perlu memperhatikan akses & parkir.",
+        "total_reviews": 492
     },
     "Bumi Perkemahan Sambi Sewu - Seropan": {
         "aspects": {
@@ -408,58 +527,58 @@
             "toilet": {
                 "label": "Fasilitas Toilet",
                 "icon": "🚽",
-                "pos": 0,
-                "neg": 1,
-                "mentions": 4,
-                "score": 1.0
+                "pos": 3,
+                "neg": 2,
+                "mentions": 15,
+                "score": 3.4
             },
             "akses": {
                 "label": "Akses & Parkir",
                 "icon": "🛣️",
-                "pos": 2,
-                "neg": 0,
-                "mentions": 7,
-                "score": 5.0
+                "pos": 14,
+                "neg": 2,
+                "mentions": 28,
+                "score": 4.5
             },
             "view": {
                 "label": "Pemandangan Alam",
                 "icon": "🍃",
-                "pos": 3,
-                "neg": 1,
-                "mentions": 9,
-                "score": 4.0
+                "pos": 29,
+                "neg": 3,
+                "mentions": 54,
+                "score": 4.6
             },
             "kenyamanan": {
                 "label": "Area Camping",
                 "icon": "⛺",
-                "pos": 3,
-                "neg": 1,
-                "mentions": 8,
-                "score": 4.0
+                "pos": 14,
+                "neg": 2,
+                "mentions": 32,
+                "score": 4.5
             },
             "pelayanan": {
                 "label": "Pelayanan Staff",
                 "icon": "🤝",
-                "pos": 3,
+                "pos": 12,
                 "neg": 0,
-                "mentions": 7,
+                "mentions": 25,
                 "score": 5.0
             },
             "fasilitas": {
                 "label": "Fasilitas Umum",
                 "icon": "⚡",
-                "pos": 1,
+                "pos": 5,
                 "neg": 0,
-                "mentions": 3,
+                "mentions": 9,
                 "score": 5.0
             }
         },
         "badges": [
-            "pemula",
+            "keluarga",
             "campervan"
         ],
-        "insight": "Pengunjung sangat menyukai akses & parkir, namun perlu memperhatikan fasilitas toilet.",
-        "total_reviews": 10
+        "insight": "Pengunjung sangat menyukai pelayanan staff, namun perlu memperhatikan fasilitas toilet.",
+        "total_reviews": 91
     },
     "Camp Ground Bukit Sikunir": {
         "aspects": {
@@ -573,72 +692,127 @@
         "insight": "Kekuatan utama tempat ini adalah fasilitas toilet yang sangat memuaskan.",
         "total_reviews": 6
     },
-    "Campground Sekipan": {
+    "Camp ground puncak ungaran": {
         "aspects": {
             "toilet": {
                 "label": "Fasilitas Toilet",
                 "icon": "🚽",
                 "pos": 0,
-                "neg": 0,
-                "mentions": 0,
-                "score": 0
+                "neg": 1,
+                "mentions": 3,
+                "score": 1.0
             },
             "akses": {
                 "label": "Akses & Parkir",
                 "icon": "🛣️",
-                "pos": 0,
+                "pos": 1,
                 "neg": 0,
-                "mentions": 0,
-                "score": 0
+                "mentions": 2,
+                "score": 5.0
             },
             "view": {
                 "label": "Pemandangan Alam",
                 "icon": "🍃",
-                "pos": 2,
+                "pos": 0,
                 "neg": 0,
-                "mentions": 3,
-                "score": 5.0
+                "mentions": 2,
+                "score": 0
             },
             "kenyamanan": {
                 "label": "Area Camping",
                 "icon": "⛺",
-                "pos": 2,
-                "neg": 1,
-                "mentions": 3,
-                "score": 3.7
+                "pos": 1,
+                "neg": 0,
+                "mentions": 2,
+                "score": 5.0
             },
             "pelayanan": {
                 "label": "Pelayanan Staff",
                 "icon": "🤝",
-                "pos": 2,
+                "pos": 0,
                 "neg": 0,
-                "mentions": 2,
-                "score": 5.0
+                "mentions": 0,
+                "score": 0
             },
             "fasilitas": {
                 "label": "Fasilitas Umum",
                 "icon": "⚡",
                 "pos": 0,
                 "neg": 0,
-                "mentions": 0,
+                "mentions": 1,
                 "score": 0
+            }
+        },
+        "badges": [],
+        "insight": "Kekuatan utama tempat ini adalah fasilitas toilet yang sangat memuaskan.",
+        "total_reviews": 8
+    },
+    "Campground Sekipan": {
+        "aspects": {
+            "toilet": {
+                "label": "Fasilitas Toilet",
+                "icon": "🚽",
+                "pos": 50,
+                "neg": 2,
+                "mentions": 99,
+                "score": 4.8
+            },
+            "akses": {
+                "label": "Akses & Parkir",
+                "icon": "🛣️",
+                "pos": 48,
+                "neg": 2,
+                "mentions": 90,
+                "score": 4.8
+            },
+            "view": {
+                "label": "Pemandangan Alam",
+                "icon": "🍃",
+                "pos": 76,
+                "neg": 7,
+                "mentions": 135,
+                "score": 4.7
+            },
+            "kenyamanan": {
+                "label": "Area Camping",
+                "icon": "⛺",
+                "pos": 117,
+                "neg": 8,
+                "mentions": 197,
+                "score": 4.7
+            },
+            "pelayanan": {
+                "label": "Pelayanan Staff",
+                "icon": "🤝",
+                "pos": 70,
+                "neg": 4,
+                "mentions": 121,
+                "score": 4.8
+            },
+            "fasilitas": {
+                "label": "Fasilitas Umum",
+                "icon": "⚡",
+                "pos": 51,
+                "neg": 2,
+                "mentions": 88,
+                "score": 4.8
             }
         },
         "badges": [
             "keluarga",
             "healing"
         ],
-        "insight": "Pengunjung sangat menyukai pemandangan alam, namun perlu memperhatikan area camping.",
-        "total_reviews": 10
+        "insight": "Pengunjung sangat menyukai fasilitas toilet, namun perlu memperhatikan pemandangan alam.",
+        "total_reviews": 502
     },
     "Campgrounds Kedungrejo": {
         "aspects": {
             "toilet": {
                 "label": "Fasilitas Toilet",
                 "icon": "🚽",
-                "pos": 15,
+                "pos": 16,
                 "neg": 0,
-                "mentions": 26,
+                "mentions": 27,
                 "score": 5.0
             },
             "akses": {
@@ -652,9 +826,9 @@
             "view": {
                 "label": "Pemandangan Alam",
                 "icon": "🍃",
-                "pos": 19,
+                "pos": 20,
                 "neg": 0,
-                "mentions": 26,
+                "mentions": 27,
                 "score": 5.0
             },
             "kenyamanan": {
@@ -668,9 +842,9 @@
             "pelayanan": {
                 "label": "Pelayanan Staff",
                 "icon": "🤝",
-                "pos": 14,
+                "pos": 15,
                 "neg": 0,
-                "mentions": 22,
+                "mentions": 25,
                 "score": 5.0
             },
             "fasilitas": {
@@ -686,7 +860,7 @@
             "keluarga"
         ],
         "insight": "Pengunjung sangat menyukai fasilitas toilet, namun perlu memperhatikan akses & parkir.",
-        "total_reviews": 111
+        "total_reviews": 114
     },
     "Campgrounds Kleresede": {
         "aspects": {
@@ -717,9 +891,9 @@
             "kenyamanan": {
                 "label": "Area Camping",
                 "icon": "⛺",
-                "pos": 17,
+                "pos": 18,
                 "neg": 1,
-                "mentions": 23,
+                "mentions": 24,
                 "score": 4.8
             },
             "pelayanan": {
@@ -743,67 +917,68 @@
             "keluarga"
         ],
         "insight": "Pengunjung sangat menyukai pemandangan alam, namun perlu memperhatikan akses & parkir.",
-        "total_reviews": 90
+        "total_reviews": 93
     },
     "Camping Ground Bukit Klangon": {
         "aspects": {
             "toilet": {
                 "label": "Fasilitas Toilet",
                 "icon": "🚽",
-                "pos": 10,
-                "neg": 1,
-                "mentions": 38,
-                "score": 4.6
+                "pos": 11,
+                "neg": 2,
+                "mentions": 43,
+                "score": 4.4
             },
             "akses": {
                 "label": "Akses & Parkir",
                 "icon": "🛣️",
                 "pos": 7,
                 "neg": 0,
-                "mentions": 27,
+                "mentions": 30,
                 "score": 5.0
             },
             "view": {
                 "label": "Pemandangan Alam",
                 "icon": "🍃",
-                "pos": 27,
-                "neg": 0,
-                "mentions": 51,
-                "score": 5.0
+                "pos": 31,
+                "neg": 1,
+                "mentions": 59,
+                "score": 4.9
             },
             "kenyamanan": {
                 "label": "Area Camping",
                 "icon": "⛺",
-                "pos": 16,
-                "neg": 1,
-                "mentions": 38,
-                "score": 4.8
+                "pos": 19,
+                "neg": 2,
+                "mentions": 45,
+                "score": 4.6
             },
             "pelayanan": {
                 "label": "Pelayanan Staff",
                 "icon": "🤝",
-                "pos": 3,
-                "neg": 1,
-                "mentions": 21,
-                "score": 4.0
+                "pos": 5,
+                "neg": 2,
+                "mentions": 26,
+                "score": 3.9
             },
             "fasilitas": {
                 "label": "Fasilitas Umum",
                 "icon": "⚡",
-                "pos": 8,
+                "pos": 9,
                 "neg": 1,
-                "mentions": 34,
+                "mentions": 39,
                 "score": 4.6
             }
         },
         "badges": [
             "keluarga",
+            "pemula",
             "petualang",
             "campervan",
             "healing"
         ],
         "insight": "Pengunjung sangat menyukai akses & parkir, namun perlu memperhatikan pelayanan staff.",
-        "total_reviews": 95
+        "total_reviews": 111
     },
     "Camping Ground Bukit Ngisis": {
         "aspects": {
@@ -828,7 +1003,7 @@
                 "icon": "🍃",
                 "pos": 2,
                 "neg": 0,
-                "mentions": 3,
+                "mentions": 4,
                 "score": 5.0
             },
             "kenyamanan": {
@@ -860,7 +1035,65 @@
             "healing"
         ],
         "insight": "Kekuatan utama tempat ini adalah pemandangan alam yang sangat memuaskan.",
-        "total_reviews": 9
+        "total_reviews": 10
+    },
+    "Camping Ground Kampung Sakinah": {
+        "aspects": {
+            "toilet": {
+                "label": "Fasilitas Toilet",
+                "icon": "🚽",
+                "pos": 1,
+                "neg": 0,
+                "mentions": 1,
+                "score": 5.0
+            },
+            "akses": {
+                "label": "Akses & Parkir",
+                "icon": "🛣️",
+                "pos": 1,
+                "neg": 0,
+                "mentions": 1,
+                "score": 5.0
+            },
+            "view": {
+                "label": "Pemandangan Alam",
+                "icon": "🍃",
+                "pos": 3,
+                "neg": 0,
+                "mentions": 3,
+                "score": 5.0
+            },
+            "kenyamanan": {
+                "label": "Area Camping",
+                "icon": "⛺",
+                "pos": 6,
+                "neg": 0,
+                "mentions": 6,
+                "score": 5.0
+            },
+            "pelayanan": {
+                "label": "Pelayanan Staff",
+                "icon": "🤝",
+                "pos": 5,
+                "neg": 0,
+                "mentions": 5,
+                "score": 5.0
+            },
+            "fasilitas": {
+                "label": "Fasilitas Umum",
+                "icon": "⚡",
+                "pos": 0,
+                "neg": 0,
+                "mentions": 0,
+                "score": 0
+            }
+        },
+        "badges": [
+            "keluarga",
+            "healing"
+        ],
+        "insight": "Kekuatan utama tempat ini adalah pemandangan alam yang sangat memuaskan.",
+        "total_reviews": 10
     },
     "Camping Ground Karimunjawa": {
         "aspects": {
@@ -981,42 +1214,158 @@
             "toilet": {
                 "label": "Fasilitas Toilet",
                 "icon": "🚽",
+                "pos": 2,
+                "neg": 0,
+                "mentions": 31,
+                "score": 5.0
+            },
+            "akses": {
+                "label": "Akses & Parkir",
+                "icon": "🛣️",
+                "pos": 17,
+                "neg": 1,
+                "mentions": 44,
+                "score": 4.8
+            },
+            "view": {
+                "label": "Pemandangan Alam",
+                "icon": "🍃",
+                "pos": 43,
+                "neg": 2,
+                "mentions": 82,
+                "score": 4.8
+            },
+            "kenyamanan": {
+                "label": "Area Camping",
+                "icon": "⛺",
+                "pos": 39,
+                "neg": 1,
+                "mentions": 75,
+                "score": 4.9
+            },
+            "pelayanan": {
+                "label": "Pelayanan Staff",
+                "icon": "🤝",
+                "pos": 27,
+                "neg": 2,
+                "mentions": 60,
+                "score": 4.7
+            },
+            "fasilitas": {
+                "label": "Fasilitas Umum",
+                "icon": "⚡",
+                "pos": 16,
+                "neg": 1,
+                "mentions": 41,
+                "score": 4.8
+            }
+        },
+        "badges": [
+            "keluarga",
+            "petualang"
+        ],
+        "insight": "Pengunjung sangat menyukai fasilitas toilet, namun perlu memperhatikan pelayanan staff.",
+        "total_reviews": 152
+    },
+    "Camping Ground Parkiran Bukit Sikunir": {
+        "aspects": {
+            "toilet": {
+                "label": "Fasilitas Toilet",
+                "icon": "🚽",
                 "pos": 0,
                 "neg": 0,
-                "mentions": 4,
+                "mentions": 2,
                 "score": 0
             },
             "akses": {
                 "label": "Akses & Parkir",
                 "icon": "🛣️",
                 "pos": 0,
-                "neg": 0,
-                "mentions": 5,
-                "score": 0
+                "neg": 1,
+                "mentions": 2,
+                "score": 1.0
             },
             "view": {
                 "label": "Pemandangan Alam",
                 "icon": "🍃",
-                "pos": 0,
+                "pos": 1,
                 "neg": 0,
-                "mentions": 4,
-                "score": 0
+                "mentions": 3,
+                "score": 5.0
             },
             "kenyamanan": {
                 "label": "Area Camping",
                 "icon": "⛺",
-                "pos": 2,
+                "pos": 3,
                 "neg": 0,
-                "mentions": 6,
+                "mentions": 5,
                 "score": 5.0
             },
             "pelayanan": {
                 "label": "Pelayanan Staff",
                 "icon": "🤝",
                 "pos": 1,
+                "neg": 1,
+                "mentions": 5,
+                "score": 3.0
+            },
+            "fasilitas": {
+                "label": "Fasilitas Umum",
+                "icon": "⚡",
+                "pos": 0,
+                "neg": 0,
+                "mentions": 1,
+                "score": 0
+            }
+        },
+        "badges": [
+            "keluarga",
+            "healing"
+        ],
+        "insight": "Pengunjung sangat menyukai pemandangan alam, namun perlu memperhatikan pelayanan staff.",
+        "total_reviews": 10
+    },
+    "Camping Ground Sikunir Sembungan Dieng": {
+        "aspects": {
+            "toilet": {
+                "label": "Fasilitas Toilet",
+                "icon": "🚽",
+                "pos": 1,
+                "neg": 0,
+                "mentions": 2,
+                "score": 5.0
+            },
+            "akses": {
+                "label": "Akses & Parkir",
+                "icon": "🛣️",
+                "pos": 1,
+                "neg": 0,
+                "mentions": 2,
+                "score": 5.0
+            },
+            "view": {
+                "label": "Pemandangan Alam",
+                "icon": "🍃",
+                "pos": 3,
+                "neg": 0,
+                "mentions": 8,
+                "score": 5.0
+            },
+            "kenyamanan": {
+                "label": "Area Camping",
+                "icon": "⛺",
+                "pos": 1,
                 "neg": 0,
                 "mentions": 5,
                 "score": 5.0
+            },
+            "pelayanan": {
+                "label": "Pelayanan Staff",
+                "icon": "🤝",
+                "pos": 0,
+                "neg": 1,
+                "mentions": 4,
+                "score": 1.0
             },
             "fasilitas": {
                 "label": "Fasilitas Umum",
@@ -1028,10 +1377,10 @@
             }
         },
         "badges": [
-            "petualang"
+            "healing"
         ],
-        "insight": "Kekuatan utama tempat ini adalah area camping yang sangat memuaskan.",
-        "total_reviews": 10
+        "insight": "Pengunjung sangat menyukai pemandangan alam, namun perlu memperhatikan pelayanan staff.",
+        "total_reviews": 12
     },
     "Camping Ground Wanagama": {
         "aspects": {
@@ -1213,61 +1562,174 @@
             "toilet": {
                 "label": "Fasilitas Toilet",
                 "icon": "🚽",
-                "pos": 1,
+                "pos": 5,
+                "neg": 3,
+                "mentions": 10,
+                "score": 3.5
+            },
+            "akses": {
+                "label": "Akses & Parkir",
+                "icon": "🛣️",
+                "pos": 4,
+                "neg": 1,
+                "mentions": 7,
+                "score": 4.2
+            },
+            "view": {
+                "label": "Pemandangan Alam",
+                "icon": "🍃",
+                "pos": 12,
+                "neg": 3,
+                "mentions": 19,
+                "score": 4.2
+            },
+            "kenyamanan": {
+                "label": "Area Camping",
+                "icon": "⛺",
+                "pos": 11,
+                "neg": 5,
+                "mentions": 23,
+                "score": 3.8
+            },
+            "pelayanan": {
+                "label": "Pelayanan Staff",
+                "icon": "🤝",
+                "pos": 16,
                 "neg": 0,
-                "mentions": 3,
+                "mentions": 23,
                 "score": 5.0
+            },
+            "fasilitas": {
+                "label": "Fasilitas Umum",
+                "icon": "⚡",
+                "pos": 2,
+                "neg": 3,
+                "mentions": 6,
+                "score": 2.6
+            }
+        },
+        "badges": [
+            "keluarga",
+            "pemula",
+            "healing",
+            "glamping"
+        ],
+        "insight": "Pengunjung sangat menyukai pelayanan staff, namun perlu memperhatikan fasilitas umum.",
+        "total_reviews": 50
+    },
+    "Camping ground Karimunjawa": {
+        "aspects": {
+            "toilet": {
+                "label": "Fasilitas Toilet",
+                "icon": "🚽",
+                "pos": 0,
+                "neg": 0,
+                "mentions": 0,
+                "score": 0
             },
             "akses": {
                 "label": "Akses & Parkir",
                 "icon": "🛣️",
                 "pos": 1,
                 "neg": 0,
+                "mentions": 1,
+                "score": 5.0
+            },
+            "view": {
+                "label": "Pemandangan Alam",
+                "icon": "🍃",
+                "pos": 2,
+                "neg": 0,
+                "mentions": 3,
+                "score": 5.0
+            },
+            "kenyamanan": {
+                "label": "Area Camping",
+                "icon": "⛺",
+                "pos": 0,
+                "neg": 0,
+                "mentions": 1,
+                "score": 0
+            },
+            "pelayanan": {
+                "label": "Pelayanan Staff",
+                "icon": "🤝",
+                "pos": 1,
+                "neg": 0,
+                "mentions": 1,
+                "score": 5.0
+            },
+            "fasilitas": {
+                "label": "Fasilitas Umum",
+                "icon": "⚡",
+                "pos": 1,
+                "neg": 0,
                 "mentions": 2,
+                "score": 5.0
+            }
+        },
+        "badges": [],
+        "insight": "Kekuatan utama tempat ini adalah pemandangan alam yang sangat memuaskan.",
+        "total_reviews": 8
+    },
+    "Camping ground Laguna Pantai Glagah": {
+        "aspects": {
+            "toilet": {
+                "label": "Fasilitas Toilet",
+                "icon": "🚽",
+                "pos": 2,
+                "neg": 0,
+                "mentions": 9,
+                "score": 5.0
+            },
+            "akses": {
+                "label": "Akses & Parkir",
+                "icon": "🛣️",
+                "pos": 3,
+                "neg": 0,
+                "mentions": 7,
                 "score": 5.0
             },
             "view": {
                 "label": "Pemandangan Alam",
                 "icon": "🍃",
                 "pos": 3,
-                "neg": 1,
-                "mentions": 7,
-                "score": 4.0
+                "neg": 0,
+                "mentions": 8,
+                "score": 5.0
             },
             "kenyamanan": {
                 "label": "Area Camping",
                 "icon": "⛺",
-                "pos": 3,
-                "neg": 1,
-                "mentions": 7,
-                "score": 4.0
+                "pos": 4,
+                "neg": 0,
+                "mentions": 9,
+                "score": 5.0
             },
             "pelayanan": {
                 "label": "Pelayanan Staff",
                 "icon": "🤝",
-                "pos": 7,
+                "pos": 2,
                 "neg": 0,
-                "mentions": 9,
+                "mentions": 6,
                 "score": 5.0
             },
             "fasilitas": {
                 "label": "Fasilitas Umum",
                 "icon": "⚡",
-                "pos": 0,
-                "neg": 1,
-                "mentions": 2,
-                "score": 1.0
+                "pos": 3,
+                "neg": 0,
+                "mentions": 8,
+                "score": 5.0
             }
         },
         "badges": [
             "keluarga",
             "pemula",
-            "campervan",
-            "healing",
-            "glamping"
+            "healing"
         ],
-        "insight": "Pengunjung sangat menyukai fasilitas toilet, namun perlu memperhatikan pemandangan alam.",
-        "total_reviews": 12
+        "insight": "Kekuatan utama tempat ini adalah fasilitas toilet yang sangat memuaskan.",
+        "total_reviews": 24
     },
     "Ekowisata Kali Talang": {
         "aspects": {
@@ -1329,6 +1791,126 @@
         ],
         "insight": "Pengunjung sangat menyukai fasilitas toilet, namun perlu memperhatikan area camping.",
         "total_reviews": 20
+    },
+    "GERBANG MERAPI MOUNTAIN VIEW": {
+        "aspects": {
+            "toilet": {
+                "label": "Fasilitas Toilet",
+                "icon": "🚽",
+                "pos": 25,
+                "neg": 0,
+                "mentions": 53,
+                "score": 5.0
+            },
+            "akses": {
+                "label": "Akses & Parkir",
+                "icon": "🛣️",
+                "pos": 16,
+                "neg": 0,
+                "mentions": 42,
+                "score": 5.0
+            },
+            "view": {
+                "label": "Pemandangan Alam",
+                "icon": "🍃",
+                "pos": 77,
+                "neg": 2,
+                "mentions": 123,
+                "score": 4.9
+            },
+            "kenyamanan": {
+                "label": "Area Camping",
+                "icon": "⛺",
+                "pos": 31,
+                "neg": 2,
+                "mentions": 58,
+                "score": 4.8
+            },
+            "pelayanan": {
+                "label": "Pelayanan Staff",
+                "icon": "🤝",
+                "pos": 26,
+                "neg": 2,
+                "mentions": 52,
+                "score": 4.7
+            },
+            "fasilitas": {
+                "label": "Fasilitas Umum",
+                "icon": "⚡",
+                "pos": 47,
+                "neg": 1,
+                "mentions": 80,
+                "score": 4.9
+            }
+        },
+        "badges": [
+            "keluarga",
+            "petualang",
+            "campervan",
+            "healing"
+        ],
+        "insight": "Pengunjung sangat menyukai fasilitas toilet, namun perlu memperhatikan pelayanan staff.",
+        "total_reviews": 172
+    },
+    "GLAMPING MENOREH": {
+        "aspects": {
+            "toilet": {
+                "label": "Fasilitas Toilet",
+                "icon": "🚽",
+                "pos": 24,
+                "neg": 5,
+                "mentions": 55,
+                "score": 4.3
+            },
+            "akses": {
+                "label": "Akses & Parkir",
+                "icon": "🛣️",
+                "pos": 20,
+                "neg": 4,
+                "mentions": 47,
+                "score": 4.3
+            },
+            "view": {
+                "label": "Pemandangan Alam",
+                "icon": "🍃",
+                "pos": 31,
+                "neg": 4,
+                "mentions": 62,
+                "score": 4.5
+            },
+            "kenyamanan": {
+                "label": "Area Camping",
+                "icon": "⛺",
+                "pos": 43,
+                "neg": 5,
+                "mentions": 80,
+                "score": 4.6
+            },
+            "pelayanan": {
+                "label": "Pelayanan Staff",
+                "icon": "🤝",
+                "pos": 34,
+                "neg": 2,
+                "mentions": 59,
+                "score": 4.8
+            },
+            "fasilitas": {
+                "label": "Fasilitas Umum",
+                "icon": "⚡",
+                "pos": 13,
+                "neg": 4,
+                "mentions": 32,
+                "score": 4.1
+            }
+        },
+        "badges": [
+            "keluarga",
+            "campervan",
+            "healing",
+            "glamping"
+        ],
+        "insight": "Pengunjung sangat menyukai pelayanan staff, namun perlu memperhatikan fasilitas umum.",
+        "total_reviews": 150
     },
     "Gerbang Merapi Mountain View": {
         "aspects": {
@@ -1456,59 +2038,60 @@
             "toilet": {
                 "label": "Fasilitas Toilet",
                 "icon": "🚽",
-                "pos": 2,
+                "pos": 11,
                 "neg": 0,
-                "mentions": 3,
+                "mentions": 15,
                 "score": 5.0
             },
             "akses": {
                 "label": "Akses & Parkir",
                 "icon": "🛣️",
-                "pos": 5,
-                "neg": 0,
-                "mentions": 6,
-                "score": 5.0
+                "pos": 15,
+                "neg": 1,
+                "mentions": 19,
+                "score": 4.8
             },
             "view": {
                 "label": "Pemandangan Alam",
                 "icon": "🍃",
-                "pos": 4,
+                "pos": 23,
                 "neg": 0,
-                "mentions": 4,
+                "mentions": 28,
                 "score": 5.0
             },
             "kenyamanan": {
                 "label": "Area Camping",
                 "icon": "⛺",
-                "pos": 6,
+                "pos": 30,
                 "neg": 0,
-                "mentions": 9,
+                "mentions": 36,
                 "score": 5.0
             },
             "pelayanan": {
                 "label": "Pelayanan Staff",
                 "icon": "🤝",
-                "pos": 6,
+                "pos": 31,
                 "neg": 0,
-                "mentions": 7,
+                "mentions": 35,
                 "score": 5.0
             },
             "fasilitas": {
                 "label": "Fasilitas Umum",
                 "icon": "⚡",
-                "pos": 1,
+                "pos": 12,
                 "neg": 0,
-                "mentions": 2,
+                "mentions": 15,
                 "score": 5.0
             }
         },
         "badges": [
             "keluarga",
             "pemula",
-            "healing"
+            "healing",
+            "glamping"
         ],
-        "insight": "Kekuatan utama tempat ini adalah fasilitas toilet yang sangat memuaskan.",
-        "total_reviews": 10
+        "insight": "Pengunjung sangat menyukai fasilitas toilet, namun perlu memperhatikan akses & parkir.",
+        "total_reviews": 67
     },
     "Kaliurang Forest Camp": {
         "aspects": {
@@ -1570,120 +2153,118 @@
             "toilet": {
                 "label": "Fasilitas Toilet",
                 "icon": "🚽",
-                "pos": 9,
+                "pos": 10,
                 "neg": 0,
-                "mentions": 16,
+                "mentions": 17,
                 "score": 5.0
             },
             "akses": {
                 "label": "Akses & Parkir",
                 "icon": "🛣️",
-                "pos": 7,
+                "pos": 8,
                 "neg": 1,
-                "mentions": 16,
-                "score": 4.5
+                "mentions": 17,
+                "score": 4.6
             },
             "view": {
                 "label": "Pemandangan Alam",
                 "icon": "🍃",
-                "pos": 23,
+                "pos": 25,
                 "neg": 0,
-                "mentions": 35,
+                "mentions": 37,
                 "score": 5.0
             },
             "kenyamanan": {
                 "label": "Area Camping",
                 "icon": "⛺",
-                "pos": 13,
+                "pos": 16,
                 "neg": 0,
-                "mentions": 26,
+                "mentions": 29,
                 "score": 5.0
             },
             "pelayanan": {
                 "label": "Pelayanan Staff",
                 "icon": "🤝",
-                "pos": 5,
+                "pos": 8,
                 "neg": 0,
-                "mentions": 14,
+                "mentions": 18,
                 "score": 5.0
             },
             "fasilitas": {
                 "label": "Fasilitas Umum",
                 "icon": "⚡",
-                "pos": 8,
+                "pos": 10,
                 "neg": 0,
-                "mentions": 15,
+                "mentions": 17,
                 "score": 5.0
             }
         },
         "badges": [
             "keluarga",
             "pemula",
-            "petualang",
             "campervan",
             "healing"
         ],
         "insight": "Pengunjung sangat menyukai fasilitas toilet, namun perlu memperhatikan akses & parkir.",
-        "total_reviews": 70
+        "total_reviews": 79
     },
     "Ledok Sambi Ecopark": {
         "aspects": {
             "toilet": {
                 "label": "Fasilitas Toilet",
                 "icon": "🚽",
-                "pos": 1,
-                "neg": 0,
-                "mentions": 6,
-                "score": 5.0
+                "pos": 137,
+                "neg": 3,
+                "mentions": 249,
+                "score": 4.9
             },
             "akses": {
                 "label": "Akses & Parkir",
                 "icon": "🛣️",
-                "pos": 2,
-                "neg": 0,
-                "mentions": 4,
-                "score": 5.0
+                "pos": 117,
+                "neg": 4,
+                "mentions": 226,
+                "score": 4.9
             },
             "view": {
                 "label": "Pemandangan Alam",
                 "icon": "🍃",
-                "pos": 3,
-                "neg": 0,
-                "mentions": 9,
+                "pos": 186,
+                "neg": 2,
+                "mentions": 328,
                 "score": 5.0
             },
             "kenyamanan": {
                 "label": "Area Camping",
                 "icon": "⛺",
-                "pos": 9,
-                "neg": 0,
-                "mentions": 13,
-                "score": 5.0
+                "pos": 170,
+                "neg": 7,
+                "mentions": 283,
+                "score": 4.8
             },
             "pelayanan": {
                 "label": "Pelayanan Staff",
                 "icon": "🤝",
-                "pos": 5,
-                "neg": 0,
-                "mentions": 10,
-                "score": 5.0
+                "pos": 251,
+                "neg": 11,
+                "mentions": 419,
+                "score": 4.8
             },
             "fasilitas": {
                 "label": "Fasilitas Umum",
                 "icon": "⚡",
-                "pos": 5,
-                "neg": 0,
-                "mentions": 9,
-                "score": 5.0
+                "pos": 201,
+                "neg": 7,
+                "mentions": 329,
+                "score": 4.9
             }
         },
         "badges": [
             "keluarga",
-            "pemula",
             "healing"
         ],
-        "insight": "Kekuatan utama tempat ini adalah fasilitas toilet yang sangat memuaskan.",
-        "total_reviews": 20
+        "insight": "Pengunjung sangat menyukai pemandangan alam, namun perlu memperhatikan area camping.",
+        "total_reviews": 898
     },
     "Lor Sambi Camping Ground": {
         "aspects": {
@@ -1811,49 +2392,49 @@
             "toilet": {
                 "label": "Fasilitas Toilet",
                 "icon": "🚽",
-                "pos": 39,
+                "pos": 41,
                 "neg": 3,
-                "mentions": 93,
+                "mentions": 100,
                 "score": 4.7
             },
             "akses": {
                 "label": "Akses & Parkir",
                 "icon": "🛣️",
-                "pos": 106,
-                "neg": 10,
-                "mentions": 235,
-                "score": 4.7
+                "pos": 114,
+                "neg": 12,
+                "mentions": 254,
+                "score": 4.6
             },
             "view": {
                 "label": "Pemandangan Alam",
                 "icon": "🍃",
-                "pos": 90,
-                "neg": 3,
-                "mentions": 179,
-                "score": 4.9
+                "pos": 93,
+                "neg": 5,
+                "mentions": 191,
+                "score": 4.8
             },
             "kenyamanan": {
                 "label": "Area Camping",
                 "icon": "⛺",
-                "pos": 53,
+                "pos": 56,
                 "neg": 4,
-                "mentions": 124,
+                "mentions": 130,
                 "score": 4.7
             },
             "pelayanan": {
                 "label": "Pelayanan Staff",
                 "icon": "🤝",
-                "pos": 70,
+                "pos": 73,
                 "neg": 6,
-                "mentions": 149,
+                "mentions": 159,
                 "score": 4.7
             },
             "fasilitas": {
                 "label": "Fasilitas Umum",
                 "icon": "⚡",
-                "pos": 50,
+                "pos": 53,
                 "neg": 3,
-                "mentions": 114,
+                "mentions": 122,
                 "score": 4.8
             }
         },
@@ -1862,68 +2443,66 @@
             "petualang",
             "campervan"
         ],
-        "insight": "Pengunjung sangat menyukai pemandangan alam, namun perlu memperhatikan fasilitas toilet.",
-        "total_reviews": 389
+        "insight": "Pengunjung sangat menyukai pemandangan alam, namun perlu memperhatikan akses & parkir.",
+        "total_reviews": 425
     },
     "Pinusan Nglimut": {
         "aspects": {
             "toilet": {
                 "label": "Fasilitas Toilet",
                 "icon": "🚽",
-                "pos": 0,
-                "neg": 0,
-                "mentions": 4,
-                "score": 0
+                "pos": 14,
+                "neg": 3,
+                "mentions": 32,
+                "score": 4.3
             },
             "akses": {
                 "label": "Akses & Parkir",
                 "icon": "🛣️",
-                "pos": 0,
+                "pos": 11,
                 "neg": 1,
-                "mentions": 7,
-                "score": 1.0
+                "mentions": 32,
+                "score": 4.7
             },
             "view": {
                 "label": "Pemandangan Alam",
                 "icon": "🍃",
-                "pos": 1,
-                "neg": 0,
-                "mentions": 4,
-                "score": 5.0
+                "pos": 21,
+                "neg": 2,
+                "mentions": 34,
+                "score": 4.7
             },
             "kenyamanan": {
                 "label": "Area Camping",
                 "icon": "⛺",
-                "pos": 4,
-                "neg": 0,
-                "mentions": 9,
-                "score": 5.0
+                "pos": 47,
+                "neg": 4,
+                "mentions": 81,
+                "score": 4.7
             },
             "pelayanan": {
                 "label": "Pelayanan Staff",
                 "icon": "🤝",
-                "pos": 1,
-                "neg": 1,
-                "mentions": 6,
-                "score": 3.0
+                "pos": 17,
+                "neg": 4,
+                "mentions": 38,
+                "score": 4.2
             },
             "fasilitas": {
                 "label": "Fasilitas Umum",
                 "icon": "⚡",
-                "pos": 1,
+                "pos": 15,
                 "neg": 1,
-                "mentions": 7,
-                "score": 3.0
+                "mentions": 32,
+                "score": 4.8
             }
         },
         "badges": [
             "keluarga",
-            "pemula",
-            "campervan",
             "healing"
         ],
-        "insight": "Pengunjung sangat menyukai pemandangan alam, namun perlu memperhatikan akses & parkir.",
-        "total_reviews": 12
+        "insight": "Pengunjung sangat menyukai fasilitas umum, namun perlu memperhatikan pelayanan staff.",
+        "total_reviews": 172
     },
     "Potrobayan River Camp": {
         "aspects": {
@@ -1938,17 +2517,17 @@
             "akses": {
                 "label": "Akses & Parkir",
                 "icon": "🛣️",
-                "pos": 24,
+                "pos": 25,
                 "neg": 1,
-                "mentions": 40,
+                "mentions": 41,
                 "score": 4.8
             },
             "view": {
                 "label": "Pemandangan Alam",
                 "icon": "🍃",
-                "pos": 22,
+                "pos": 23,
                 "neg": 0,
-                "mentions": 45,
+                "mentions": 47,
                 "score": 5.0
             },
             "kenyamanan": {
@@ -1962,9 +2541,9 @@
             "pelayanan": {
                 "label": "Pelayanan Staff",
                 "icon": "🤝",
-                "pos": 26,
+                "pos": 28,
                 "neg": 0,
-                "mentions": 41,
+                "mentions": 43,
                 "score": 5.0
             },
             "fasilitas": {
@@ -1983,7 +2562,67 @@
             "healing"
         ],
         "insight": "Pengunjung sangat menyukai pemandangan alam, namun perlu memperhatikan fasilitas umum.",
-        "total_reviews": 95
+        "total_reviews": 110
+    },
+    "Ratan Lurung Basecamp": {
+        "aspects": {
+            "toilet": {
+                "label": "Fasilitas Toilet",
+                "icon": "🚽",
+                "pos": 2,
+                "neg": 0,
+                "mentions": 4,
+                "score": 5.0
+            },
+            "akses": {
+                "label": "Akses & Parkir",
+                "icon": "🛣️",
+                "pos": 1,
+                "neg": 0,
+                "mentions": 4,
+                "score": 5.0
+            },
+            "view": {
+                "label": "Pemandangan Alam",
+                "icon": "🍃",
+                "pos": 13,
+                "neg": 0,
+                "mentions": 18,
+                "score": 5.0
+            },
+            "kenyamanan": {
+                "label": "Area Camping",
+                "icon": "⛺",
+                "pos": 5,
+                "neg": 0,
+                "mentions": 11,
+                "score": 5.0
+            },
+            "pelayanan": {
+                "label": "Pelayanan Staff",
+                "icon": "🤝",
+                "pos": 5,
+                "neg": 0,
+                "mentions": 10,
+                "score": 5.0
+            },
+            "fasilitas": {
+                "label": "Fasilitas Umum",
+                "icon": "⚡",
+                "pos": 6,
+                "neg": 0,
+                "mentions": 8,
+                "score": 5.0
+            }
+        },
+        "badges": [
+            "keluarga",
+            "pemula",
+            "campervan",
+            "healing"
+        ],
+        "insight": "Kekuatan utama tempat ini adalah fasilitas toilet yang sangat memuaskan.",
+        "total_reviews": 28
     },
     "Ratan Lurung Basecamp Gedongsongo": {
         "aspects": {
@@ -2045,47 +2684,106 @@
         "insight": "Kekuatan utama tempat ini adalah fasilitas toilet yang sangat memuaskan.",
         "total_reviews": 10
     },
-    "Sinolewah Camping Ground": {
+    "SIKUNIR OUTDOOR (bathotis Adventure)": {
         "aspects": {
             "toilet": {
                 "label": "Fasilitas Toilet",
                 "icon": "🚽",
-                "pos": 20,
+                "pos": 0,
                 "neg": 1,
-                "mentions": 29,
-                "score": 4.8
+                "mentions": 4,
+                "score": 1.0
             },
             "akses": {
                 "label": "Akses & Parkir",
                 "icon": "🛣️",
-                "pos": 12,
-                "neg": 2,
-                "mentions": 23,
-                "score": 4.4
+                "pos": 0,
+                "neg": 1,
+                "mentions": 3,
+                "score": 1.0
             },
             "view": {
                 "label": "Pemandangan Alam",
                 "icon": "🍃",
-                "pos": 32,
-                "neg": 0,
-                "mentions": 41,
-                "score": 5.0
+                "pos": 5,
+                "neg": 2,
+                "mentions": 9,
+                "score": 3.9
             },
             "kenyamanan": {
                 "label": "Area Camping",
                 "icon": "⛺",
-                "pos": 33,
+                "pos": 1,
                 "neg": 0,
-                "mentions": 49,
+                "mentions": 5,
                 "score": 5.0
             },
             "pelayanan": {
                 "label": "Pelayanan Staff",
                 "icon": "🤝",
+                "pos": 2,
+                "neg": 0,
+                "mentions": 6,
+                "score": 5.0
+            },
+            "fasilitas": {
+                "label": "Fasilitas Umum",
+                "icon": "⚡",
+                "pos": 1,
+                "neg": 0,
+                "mentions": 4,
+                "score": 5.0
+            }
+        },
+        "badges": [
+            "keluarga",
+            "petualang",
+            "healing"
+        ],
+        "insight": "Pengunjung sangat menyukai area camping, namun perlu memperhatikan fasilitas toilet.",
+        "total_reviews": 22
+    },
+    "Sinolewah Camping Ground": {
+        "aspects": {
+            "toilet": {
+                "label": "Fasilitas Toilet",
+                "icon": "🚽",
+                "pos": 21,
+                "neg": 1,
+                "mentions": 30,
+                "score": 4.8
+            },
+            "akses": {
+                "label": "Akses & Parkir",
+                "icon": "🛣️",
                 "pos": 14,
                 "neg": 2,
-                "mentions": 23,
+                "mentions": 25,
                 "score": 4.5
+            },
+            "view": {
+                "label": "Pemandangan Alam",
+                "icon": "🍃",
+                "pos": 33,
+                "neg": 0,
+                "mentions": 42,
+                "score": 5.0
+            },
+            "kenyamanan": {
+                "label": "Area Camping",
+                "icon": "⛺",
+                "pos": 34,
+                "neg": 0,
+                "mentions": 50,
+                "score": 5.0
+            },
+            "pelayanan": {
+                "label": "Pelayanan Staff",
+                "icon": "🤝",
+                "pos": 16,
+                "neg": 2,
+                "mentions": 25,
+                "score": 4.6
             },
             "fasilitas": {
                 "label": "Fasilitas Umum",
@@ -2100,67 +2798,124 @@
             "keluarga"
         ],
         "insight": "Pengunjung sangat menyukai pemandangan alam, namun perlu memperhatikan akses & parkir.",
-        "total_reviews": 163
+        "total_reviews": 188
+    },
+    "Supercamp Sakura Hills": {
+        "aspects": {
+            "toilet": {
+                "label": "Fasilitas Toilet",
+                "icon": "🚽",
+                "pos": 11,
+                "neg": 3,
+                "mentions": 27,
+                "score": 4.1
+            },
+            "akses": {
+                "label": "Akses & Parkir",
+                "icon": "🛣️",
+                "pos": 12,
+                "neg": 1,
+                "mentions": 28,
+                "score": 4.7
+            },
+            "view": {
+                "label": "Pemandangan Alam",
+                "icon": "🍃",
+                "pos": 27,
+                "neg": 10,
+                "mentions": 62,
+                "score": 3.9
+            },
+            "kenyamanan": {
+                "label": "Area Camping",
+                "icon": "⛺",
+                "pos": 21,
+                "neg": 2,
+                "mentions": 39,
+                "score": 4.7
+            },
+            "pelayanan": {
+                "label": "Pelayanan Staff",
+                "icon": "🤝",
+                "pos": 14,
+                "neg": 3,
+                "mentions": 31,
+                "score": 4.3
+            },
+            "fasilitas": {
+                "label": "Fasilitas Umum",
+                "icon": "⚡",
+                "pos": 5,
+                "neg": 1,
+                "mentions": 15,
+                "score": 4.3
+            }
+        },
+        "badges": [
+            "keluarga",
+            "healing"
+        ],
+        "insight": "Pengunjung sangat menyukai akses & parkir, namun perlu memperhatikan pemandangan alam.",
+        "total_reviews": 138
     },
     "Telaga Cebong": {
         "aspects": {
             "toilet": {
                 "label": "Fasilitas Toilet",
                 "icon": "🚽",
-                "pos": 0,
-                "neg": 0,
-                "mentions": 2,
-                "score": 0
+                "pos": 9,
+                "neg": 3,
+                "mentions": 33,
+                "score": 4.0
             },
             "akses": {
                 "label": "Akses & Parkir",
                 "icon": "🛣️",
-                "pos": 4,
-                "neg": 0,
-                "mentions": 8,
-                "score": 5.0
+                "pos": 26,
+                "neg": 4,
+                "mentions": 55,
+                "score": 4.5
             },
             "view": {
                 "label": "Pemandangan Alam",
                 "icon": "🍃",
-                "pos": 8,
-                "neg": 0,
-                "mentions": 13,
-                "score": 5.0
+                "pos": 52,
+                "neg": 3,
+                "mentions": 96,
+                "score": 4.8
             },
             "kenyamanan": {
                 "label": "Area Camping",
                 "icon": "⛺",
-                "pos": 3,
-                "neg": 0,
-                "mentions": 6,
-                "score": 5.0
+                "pos": 21,
+                "neg": 2,
+                "mentions": 50,
+                "score": 4.7
             },
             "pelayanan": {
                 "label": "Pelayanan Staff",
                 "icon": "🤝",
-                "pos": 1,
-                "neg": 0,
-                "mentions": 6,
-                "score": 5.0
+                "pos": 19,
+                "neg": 4,
+                "mentions": 46,
+                "score": 4.3
             },
             "fasilitas": {
                 "label": "Fasilitas Umum",
                 "icon": "⚡",
-                "pos": 1,
-                "neg": 0,
-                "mentions": 2,
-                "score": 5.0
+                "pos": 14,
+                "neg": 2,
+                "mentions": 31,
+                "score": 4.5
             }
         },
         "badges": [
-            "pemula",
+            "keluarga",
             "campervan",
-            "healing",
-            "glamping"
+            "healing"
         ],
-        "insight": "Kekuatan utama tempat ini adalah akses & parkir yang sangat memuaskan.",
-        "total_reviews": 14
+        "insight": "Pengunjung sangat menyukai pemandangan alam, namun perlu memperhatikan fasilitas toilet.",
+        "total_reviews": 180
     },
     "Telaga Dringo": {
         "aspects": {
@@ -2175,17 +2930,17 @@
             "akses": {
                 "label": "Akses & Parkir",
                 "icon": "🛣️",
-                "pos": 46,
+                "pos": 48,
                 "neg": 12,
-                "mentions": 99,
+                "mentions": 101,
                 "score": 4.2
             },
             "view": {
                 "label": "Pemandangan Alam",
                 "icon": "🍃",
-                "pos": 85,
+                "pos": 88,
                 "neg": 5,
-                "mentions": 136,
+                "mentions": 140,
                 "score": 4.8
             },
             "kenyamanan": {
@@ -2218,56 +2973,56 @@
             "healing"
         ],
         "insight": "Pengunjung sangat menyukai pemandangan alam, namun perlu memperhatikan pelayanan staff.",
-        "total_reviews": 270
+        "total_reviews": 295
     },
     "Teras Merapi": {
         "aspects": {
             "toilet": {
                 "label": "Fasilitas Toilet",
                 "icon": "🚽",
-                "pos": 128,
+                "pos": 131,
                 "neg": 6,
-                "mentions": 215,
+                "mentions": 221,
                 "score": 4.8
             },
             "akses": {
                 "label": "Akses & Parkir",
                 "icon": "🛣️",
-                "pos": 111,
+                "pos": 114,
                 "neg": 1,
-                "mentions": 166,
+                "mentions": 172,
                 "score": 5.0
             },
             "view": {
                 "label": "Pemandangan Alam",
                 "icon": "🍃",
-                "pos": 336,
+                "pos": 345,
                 "neg": 1,
-                "mentions": 437,
+                "mentions": 452,
                 "score": 5.0
             },
             "kenyamanan": {
                 "label": "Area Camping",
                 "icon": "⛺",
-                "pos": 207,
+                "pos": 213,
                 "neg": 6,
-                "mentions": 302,
+                "mentions": 312,
                 "score": 4.9
             },
             "pelayanan": {
                 "label": "Pelayanan Staff",
                 "icon": "🤝",
-                "pos": 119,
+                "pos": 124,
                 "neg": 3,
-                "mentions": 187,
+                "mentions": 196,
                 "score": 4.9
             },
             "fasilitas": {
                 "label": "Fasilitas Umum",
                 "icon": "⚡",
-                "pos": 143,
+                "pos": 146,
                 "neg": 3,
-                "mentions": 212,
+                "mentions": 220,
                 "score": 4.9
             }
         },
@@ -2276,7 +3031,66 @@
             "healing"
         ],
         "insight": "Pengunjung sangat menyukai akses & parkir, namun perlu memperhatikan fasilitas toilet.",
-        "total_reviews": 820
+        "total_reviews": 876
+    },
+    "The Joglo Camp": {
+        "aspects": {
+            "toilet": {
+                "label": "Fasilitas Toilet",
+                "icon": "🚽",
+                "pos": 8,
+                "neg": 0,
+                "mentions": 10,
+                "score": 5.0
+            },
+            "akses": {
+                "label": "Akses & Parkir",
+                "icon": "🛣️",
+                "pos": 5,
+                "neg": 0,
+                "mentions": 5,
+                "score": 5.0
+            },
+            "view": {
+                "label": "Pemandangan Alam",
+                "icon": "🍃",
+                "pos": 15,
+                "neg": 0,
+                "mentions": 20,
+                "score": 5.0
+            },
+            "kenyamanan": {
+                "label": "Area Camping",
+                "icon": "⛺",
+                "pos": 31,
+                "neg": 0,
+                "mentions": 36,
+                "score": 5.0
+            },
+            "pelayanan": {
+                "label": "Pelayanan Staff",
+                "icon": "🤝",
+                "pos": 15,
+                "neg": 0,
+                "mentions": 21,
+                "score": 5.0
+            },
+            "fasilitas": {
+                "label": "Fasilitas Umum",
+                "icon": "⚡",
+                "pos": 9,
+                "neg": 0,
+                "mentions": 10,
+                "score": 5.0
+            }
+        },
+        "badges": [
+            "keluarga",
+            "healing",
+            "glamping"
+        ],
+        "insight": "Kekuatan utama tempat ini adalah fasilitas toilet yang sangat memuaskan.",
+        "total_reviews": 65
     },
     "Waduk Sermo": {
         "aspects": {
@@ -2462,58 +3276,116 @@
             "toilet": {
                 "label": "Fasilitas Toilet",
                 "icon": "🚽",
-                "pos": 0,
-                "neg": 0,
-                "mentions": 1,
-                "score": 0
+                "pos": 42,
+                "neg": 2,
+                "mentions": 75,
+                "score": 4.8
             },
             "akses": {
                 "label": "Akses & Parkir",
                 "icon": "🛣️",
-                "pos": 1,
-                "neg": 0,
-                "mentions": 3,
-                "score": 5.0
+                "pos": 47,
+                "neg": 1,
+                "mentions": 81,
+                "score": 4.9
             },
             "view": {
                 "label": "Pemandangan Alam",
                 "icon": "🍃",
-                "pos": 1,
-                "neg": 0,
-                "mentions": 3,
-                "score": 5.0
+                "pos": 110,
+                "neg": 6,
+                "mentions": 182,
+                "score": 4.8
             },
             "kenyamanan": {
                 "label": "Area Camping",
                 "icon": "⛺",
-                "pos": 1,
-                "neg": 1,
-                "mentions": 4,
-                "score": 3.0
+                "pos": 56,
+                "neg": 5,
+                "mentions": 97,
+                "score": 4.7
             },
             "pelayanan": {
                 "label": "Pelayanan Staff",
                 "icon": "🤝",
-                "pos": 2,
-                "neg": 1,
-                "mentions": 5,
-                "score": 3.7
+                "pos": 55,
+                "neg": 5,
+                "mentions": 95,
+                "score": 4.7
             },
             "fasilitas": {
                 "label": "Fasilitas Umum",
                 "icon": "⚡",
-                "pos": 0,
-                "neg": 0,
-                "mentions": 1,
-                "score": 0
+                "pos": 42,
+                "neg": 3,
+                "mentions": 73,
+                "score": 4.7
             }
         },
         "badges": [
             "keluarga",
             "campervan",
-            "glamping"
+            "healing"
         ],
         "insight": "Pengunjung sangat menyukai akses & parkir, namun perlu memperhatikan area camping.",
-        "total_reviews": 5
+        "total_reviews": 301
+    },
+    "Watu gendong camping hills outbond center adventure": {
+        "aspects": {
+            "toilet": {
+                "label": "Fasilitas Toilet",
+                "icon": "🚽",
+                "pos": 3,
+                "neg": 0,
+                "mentions": 7,
+                "score": 5.0
+            },
+            "akses": {
+                "label": "Akses & Parkir",
+                "icon": "🛣️",
+                "pos": 7,
+                "neg": 0,
+                "mentions": 10,
+                "score": 5.0
+            },
+            "view": {
+                "label": "Pemandangan Alam",
+                "icon": "🍃",
+                "pos": 10,
+                "neg": 0,
+                "mentions": 19,
+                "score": 5.0
+            },
+            "kenyamanan": {
+                "label": "Area Camping",
+                "icon": "⛺",
+                "pos": 6,
+                "neg": 1,
+                "mentions": 10,
+                "score": 4.4
+            },
+            "pelayanan": {
+                "label": "Pelayanan Staff",
+                "icon": "🤝",
+                "pos": 4,
+                "neg": 0,
+                "mentions": 9,
+                "score": 5.0
+            },
+            "fasilitas": {
+                "label": "Fasilitas Umum",
+                "icon": "⚡",
+                "pos": 3,
+                "neg": 0,
+                "mentions": 5,
+                "score": 5.0
+            }
+        },
+        "badges": [
+            "keluarga",
+            "healing"
+        ],
+        "insight": "Pengunjung sangat menyukai fasilitas toilet, namun perlu memperhatikan area camping.",
+        "total_reviews": 60
     }
 }
