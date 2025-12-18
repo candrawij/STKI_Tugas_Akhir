@@ -1,6 +1,7 @@
 # 1. Virtual Environments (WAJIB)
 .venv/
 venv/
+.env
 env/
 
 # 2. Python Cache & Artifacts (WAJIB)

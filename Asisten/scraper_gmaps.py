@@ -10,21 +10,36 @@ from playwright.sync_api import sync_playwright
 # ================= KONFIGURASI =================
 CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
 BASE_OUTPUT_DIR = os.path.join(os.path.dirname(CURRENT_DIR), "Data_Mentah")
-USER_DATA_DIR = os.path.join(CURRENT_DIR, "chrome_session")
+USER_DATA_DIR = os.path.join(CURRENT_DIR, "chrome_session") 
 DEFAULT_MAX = 3000 
 AUTOSAVE_INTERVAL = 100
 
-# [BARU] Konfigurasi Scroll
-SCROLL_BATCH_SIZE = 4  # Berapa kali scroll sebelum berhenti untuk ambil data
-SCROLL_PIXEL = 600     # Jarak pixel sekali scroll (jangan terlalu besar biar gak loncat)
+SCROLL_BATCH_SIZE = 6   
+SCROLL_PIXEL = 800      
+USE_HEADLESS_MODE = True # Mode Gaib Aktif
 
 OWNER_KEYWORDS = [
-    "terimakasih", "terima kasih", "thank you", "thanks", 
-    "mohon maaf", "sorry", "apologize", 
+    "terimakasih", "terima kasih", "makasih", "trimakasih", "trims", "tq", "thanks", "thank you",
+    "matur nuwun", "suwun", "hatur nuhun",
+    "mohon maaf", "maaf", "sorry", "apologize", 
     "respon dari pemilik", "response from the owner",
-    "atas ulasannya", "atas masukannya", "atas kunjungan",
-    "ditunggu kedatangannya", "maaf atas ketidaknyamanan"
+    "atas ulasannya", "atas masukannya", "atas kunjungan", "atas review", "atas bintang",
+    "ditunggu kedatangannya", "maaf atas ketidaknyamanan", "sehat selalu", "sukses selalu",
+    "kak", "sis", "gan", "bund", "bapak", "ibu", "om", "tante" 
 ]
+
+def clean_session_junk():
+    print("🧹 Membersihkan sampah cache Chrome...")
+    junk_paths = [
+        os.path.join(USER_DATA_DIR, "Default", "Cache"),
+        os.path.join(USER_DATA_DIR, "Default", "Code Cache"),
+        os.path.join(USER_DATA_DIR, "Default", "Service Worker"),
+    ]
+    for path in junk_paths:
+        if os.path.exists(path):
+            try: shutil.rmtree(path)
+            except: pass
+    print("✨ Session bersih & siap.")
 
 def sanitize_filename(name):
     clean_name = re.sub(r'[\\/*?:"<>|]', "", name).strip()
@@ -39,7 +54,6 @@ def validate_url(url):
     if url.startswith("httpsmaps"): url = url.replace("httpsmaps", "https://maps")
     if url.startswith("httpmaps"): url = url.replace("httpmaps", "http://maps")
     if not url.startswith("http"): url = "https://" + url
-    
     if "hl=" not in url:
         symbol = "&" if "?" in url else "?"
         url += f"{symbol}hl=id"
@@ -66,9 +80,12 @@ def extract_time_flexible(card):
 
 def is_text_likely_owner(text):
     text_lower = text.lower()
+    if len(text) < 5 and not re.search('[aeiou]', text_lower):
+        return True 
+
     for keyword in OWNER_KEYWORDS:
         if keyword in text_lower:
-            user_pronouns = ['saya', 'aku', 'gue', 'kami merasa', 'kita']
+            user_pronouns = ['saya', 'aku', 'gue', 'kami merasa', 'kita', 'keluarga saya']
             if not any(p in text_lower for p in user_pronouns):
                 return True 
     return False
@@ -76,6 +93,8 @@ def is_text_likely_owner(text):
 def apply_sorting_newest(page):
     print("⚡ Mencoba mengurutkan 'Terbaru'...")
     try:
+        # Tunggu sebentar memastikan elemen load sempurna di headless
+        time.sleep(2)
         sort_btn = page.locator('button[aria-label*="Sort"], button[aria-label*="Urutkan"]').first
         if sort_btn.count() > 0:
             sort_btn.click()
@@ -87,11 +106,13 @@ def apply_sorting_newest(page):
                 time.sleep(3)
                 return True
     except: pass
-    print("⚠️ Gagal sorting / sudah default.")
+    print("⚠️ Gagal sorting (Mungkin layout beda karena Headless).")
     return False
 
 def scrape_reviews():
-    print("--- 🕵️‍♂️ GMAPS SCRAPER V8.2 (Batch Scroll + Precise Click) ---")
+    clean_session_junk()
+    
+    print("--- 🚀 GMAPS SCRAPER V9.2 (Headless Fix) ---")
     
     nama_file = input("1. Nama Tempat: ").strip()
     if not nama_file: return
@@ -104,13 +125,11 @@ def scrape_reviews():
         elif not target_url: return 
         else: break 
 
-    # Persiapan File
     nama_file_clean = sanitize_filename(nama_file)
     full_dir = os.path.join(BASE_OUTPUT_DIR, folder_lokasi)
     os.makedirs(full_dir, exist_ok=True)
     output_csv = os.path.join(full_dir, f"{nama_file_clean}.csv")
     
-    # Header CSV
     if not os.path.exists(output_csv):
         with open(output_csv, 'w', newline='', encoding='utf-8') as f:
             writer = csv.writer(f)
@@ -118,19 +137,23 @@ def scrape_reviews():
     
     print("-" * 40)
     print(f"🚀 Target: {nama_file_clean}") 
-    print(f"💾 Auto-Save: ON (Tiap {AUTOSAVE_INTERVAL} data)")
+    print(f"👻 Mode Gaib: {'ON' if USE_HEADLESS_MODE else 'OFF'}")
 
     current_date_scrap = datetime.now().strftime('%Y-%m-%d')
-    print(f"📅 Tanggal Scraping: {current_date_scrap}")
 
     with sync_playwright() as p:
+        # [UPDATE PENTING DI SINI] 
+        # Menambahkan User Agent agar dianggap browser Windows Asli, bukan Bot Headless
         browser = p.chromium.launch_persistent_context(
             user_data_dir=USER_DATA_DIR, 
-            headless=False,
+            headless=USE_HEADLESS_MODE, 
             viewport={"width": 1280, "height": 720}, 
-            args=["--disable-blink-features=AutomationControlled", "--no-sandbox"]
+            user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+            args=["--disable-blink-features=AutomationControlled", "--no-sandbox", "--disable-gpu"]
         )
         page = browser.pages[0]
+
+        page.route("**/*.{png,jpg,jpeg,svg,webp,gif,woff,woff2,ttf,otf}", lambda route: route.abort())
         
         unique_reviews_hashes = set()
         unsaved_buffer = [] 
@@ -141,8 +164,9 @@ def scrape_reviews():
             page.goto(target_url, timeout=60000)
             time.sleep(3)
 
-            # Navigasi & Sort
             print("👀 Mencari tombol Ulasan...")
+            time.sleep(2) 
+            
             btn_ulasan = page.locator('button, div[role="tab"]').filter(has_text=re.compile(r'^(Ulasan|Reviews)$', re.IGNORECASE)).first
             if btn_ulasan.count() > 0:
                 btn_ulasan.click()
@@ -153,55 +177,37 @@ def scrape_reviews():
                     btn_link.click()
                     time.sleep(3)
 
+            # Sorting sekarang harusnya berhasil karena User Agent sudah dipalsukan
             apply_sorting_newest(page)
 
-            print("📜 Persiapan scrolling...")
             scrollable_div = page.locator('div.m6QErb[aria-label*="Ulasan"], div.m6QErb[aria-label*="Reviews"]').first
             if scrollable_div.count() == 0:
                 scrollable_div = page.locator('div[role="main"] > div > div:nth-child(2)').first
 
-            if scrollable_div.count() > 0: 
-                scrollable_div.hover()
-            else: 
-                page.mouse.move(400, 400)
+            try:
+                if scrollable_div.count() > 0: scrollable_div.hover()
+                else: page.mouse.move(400, 400)
+            except: pass
 
             last_count = 0
             stuck_count = 0
             
             print("⚡ Mulai mengambil data...")
 
-            # --- LOOP UTAMA (PERBAIKAN STRATEGI) ---
             while True:
-                
-                # [UPDATE 1: BATCH SCROLLING]
-                # Kita scroll beberapa kali DULU, baru ambil data.
-                # Ini lebih cepat dan tidak patah-patah.
                 for _ in range(SCROLL_BATCH_SIZE):
                     page.mouse.wheel(0, SCROLL_PIXEL)
-                    # Jeda sangat pendek antar scroll (efek inertia mouse)
-                    time.sleep(random.uniform(0.1, 0.25)) 
-                
-                # Jeda agak lama setelah batch scroll selesai (biar loading tuntas)
-                time.sleep(random.uniform(0.8, 1.2))
+                    time.sleep(random.uniform(0.05, 0.15)) 
+                time.sleep(random.uniform(0.5, 0.8)) 
 
-                # [UPDATE 2: PERBAIKAN TOMBOL EXPAND (BIAR GAK KLIK USER)]
                 try:
-                    # Kita cari tombol yang teksnya BENAR-BENAR "Lainnya" atau "More"
-                    # Dan pastikan tombol itu terlihat (visible)
                     expand_btns = page.locator('button').filter(has_text=re.compile(r'^(Lainnya|More|Selengkapnya|See more)$', re.IGNORECASE)).all()
                     for btn in expand_btns:
                         if btn.is_visible():
-                            # Gunakan dispatchEvent click (bukan mouse click) agar akurat ke elemen
-                            # Ini mencegah salah klik jika layout bergeser (user profile)
-                            try:
-                                btn.dispatch_event('click')
-                            except:
-                                # Fallback jika dispatch gagal, pakai click biasa tapi hati-hati
-                                btn.click(force=True, timeout=100)
-                            time.sleep(0.05) 
+                            try: btn.dispatch_event('click')
+                            except: btn.click(force=True, timeout=50)
                 except: pass
 
-                # [EKSTRAKSI DATA (SAMA SEPERTI SEBELUMNYA)]
                 visible_cards = page.locator('div.jftiEf').all()
                 for card in visible_cards:
                     try:
@@ -209,14 +215,19 @@ def scrape_reviews():
                         full_text_list = []
                         
                         for t in text_els:
-                            is_owner_box = t.evaluate("el => el.closest('.C69kGc') !== null")
-                            content = t.inner_text().strip()
-                            likely_owner = is_text_likely_owner(content)
+                            is_labeled_owner = t.evaluate("""el => {
+                                let parent = el.closest('div');
+                                if (!parent) return false;
+                                return parent.innerText.includes('Respon dari pemilik') || parent.innerText.includes('Response from the owner');
+                            }""")
+                            if is_labeled_owner: continue 
 
-                            if not is_owner_box and not likely_owner:
-                                if content: full_text_list.append(content)
+                            content = t.inner_text().strip()
+                            if is_text_likely_owner(content): continue
+                            
+                            if content: full_text_list.append(content)
                         
-                        text_full = " | ".join(full_text_list)
+                        text_full = " ".join(full_text_list)
 
                         if text_full:
                             rating = extract_rating_flexible(card)
@@ -231,7 +242,6 @@ def scrape_reviews():
                                 total_collected += 1
                     except: continue
 
-                # Auto Save
                 if len(unsaved_buffer) >= AUTOSAVE_INTERVAL:
                     try:
                         with open(output_csv, 'a', newline='', encoding='utf-8') as f:
@@ -247,7 +257,6 @@ def scrape_reviews():
                     print("\n✅ Target tercapai!")
                     break
 
-                # Stuck Check (Logika Elemen Terakhir)
                 review_cards = page.locator('div.jftiEf')
                 current_dom_count = review_cards.count()
 
@@ -255,17 +264,17 @@ def scrape_reviews():
                     stuck_count += 1
                     if current_dom_count > 0:
                         try:
-                            # Scroll perlahan ke elemen terakhir
-                            review_cards.last.scroll_into_view_if_needed(timeout=2000)
-                            time.sleep(1)
+                            review_cards.last.scroll_into_view_if_needed(timeout=1000)
                         except: pass
                     
-                    if stuck_count > 20: 
+                    if stuck_count > 25: 
                         print(f"\n⚠️ Tidak ada ulasan baru (Mentok). Berhenti.")
                         break
                 else:
                     stuck_count = 0
-                    if scrollable_div.count() > 0: scrollable_div.hover()
+                    if scrollable_div.count() > 0: 
+                        try: scrollable_div.hover()
+                        except: pass
 
                 last_count = current_dom_count
 
