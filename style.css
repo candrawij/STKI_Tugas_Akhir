@@ -1,168 +1,114 @@
-/* === 1. FONT & BACKGROUND UTAMA === */
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap');
 
-html, body, [class*="st-"], [class*="css-"] {
-    font-family: 'Poppins', sans-serif;
-    color: #FFFFFF; /* Teks default PUTIH */
-    scroll-behavior: smooth;
-}
-
-/* Background Utama dengan Gambar Hutan Malam */
-[data-testid="stAppViewContainer"] {
-    /* Ganti URL ini jika ingin gambar lain */
-    background-image: linear-gradient(rgba(10, 10, 25, 0.8), rgba(10, 10, 25, 0.8)), url("https://images.unsplash.com/photo-1478131143081-80f7f84ca84d?q=80&w=2070&auto=format&fit=crop");
-    background-size: cover;
-    background-position: center;
-    background-attachment: fixed;
+html, body, [class*="css"] {
+    font-family: 'Inter', sans-serif;
+    color: #E0E0E0;
+    font-size: 16px;
 }
 
-[data-testid="stAppViewContainer"] > .main {
-    background-color: transparent !important;
-}
-
-/* === 2. KONTAINER UTAMA ("FROSTED GLASS") === */
-.main .block-container {
-    padding-top: 3rem;
-    padding-bottom: 5rem;
-    background: rgba(26, 26, 46, 0.85); /* Biru tua transparan */
-    backdrop-filter: blur(10px) saturate(150%);
-    -webkit-backdrop-filter: blur(10px) saturate(150%);
-    border-radius: 15px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    max-width: 1200px !important;
-    margin: 2rem auto;
-}
-
-/* === 3. TIPOGRAFI === */
-h1, h2, h3, h4, h5, h6 {
-    color: #FFFFFF !important;
-    font-weight: 600;
-}
-p, div, label, span {
-    color: #eeeeee;
-}
-.stCaption {
-    color: #aaaaaa !important;
-}
-
-/* === 4. SEARCH BAR & INPUT === */
-[data-testid="stTextInput"] > div > div {
-    background: rgba(255, 255, 255, 0.1); 
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: 10px;
-}
-[data-testid="stTextInput"] input {
-    color: #FFFFFF !important;
-}
-[data-testid="stSelectbox"] > div > div {
-    background: rgba(255, 255, 255, 0.1);
-    color: white;
-    border: 1px solid rgba(255, 255, 255, 0.2);
-}
-
-/* === 5. KOMPONEN CARD BARU (SCORECARD STYLE) === */
-/* Mengatur Container Card per Tempat */
-[data-testid="stVerticalBlock"] > [data-testid="stVerticalBlock"] {
-    background-color: rgba(40, 44, 52, 0.6);
-    border-radius: 12px;
-    padding: 15px;
-    border: 1px solid rgba(255, 255, 255, 0.05);
-    margin-bottom: 1rem;
-    transition: transform 0.2s, box-shadow 0.2s;
-}
-
-[data-testid="stVerticalBlock"] > [data-testid="stVerticalBlock"]:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-}
-
-/* Gambar dalam Card */
-div[data-testid="stImage"] {
-    border-radius: 8px;
-    overflow: hidden;
-}
-
-/* === 6. FITUR BARU: INSIGHT BOX & BADGES === */
-.insight-box {
-    padding: 12px; 
-    background-color: rgba(0, 229, 255, 0.1); 
-    border-radius: 8px; 
-    border-left: 4px solid #00E5FF; /* Cyan Neon */
-    font-style: italic;
-    margin-bottom: 10px;
-    color: #e0f7fa;
-    font-size: 0.95rem;
-}
-
-.badge {
-    display: inline-block;
-    padding: 4px 10px;
-    margin-right: 5px;
-    margin-bottom: 5px;
-    border-radius: 12px;
-    font-size: 0.75em;
-    font-weight: bold;
-    color: white !important;
-    text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
-}
-
-/* === 7. PROGRESS BAR (SCORE) === */
-.stProgress > div > div > div > div {
-    background-color: #00E5FF; /* Warna Cyan untuk Bar */
-}
-
-/* === 8. TOMBOL (BUTTONS) === */
-.stButton > button {
-    background: linear-gradient(90deg, #ff4b4b, #ff2b2b);
-    color: white !important;
-    border: none;
-    border-radius: 8px;
-    font-weight: 600;
-    transition: all 0.2s;
-}
-.stButton > button:hover {
-    transform: scale(1.02);
-    box-shadow: 0 4px 10px rgba(255, 75, 75, 0.4);
-}
-
-/* Tombol Link (Gmaps) */
-a[data-testid="stBaseLinkButton-secondary"] {
-    background-color: rgba(255, 255, 255, 0.1);
-    color: #fff !important;
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: 8px;
+/* === HERO SECTION === */
+.hero-container {
     text-align: center;
-}
-a[data-testid="stBaseLinkButton-secondary"]:hover {
-    background-color: rgba(255, 255, 255, 0.2);
-    border-color: white;
+    padding-top: 40px;
+    padding-bottom: 20px;
 }
 
-/* === 9. SIDEBAR (ADMIN) === */
-[data-testid="stSidebar"] {
-    background-color: rgba(20, 20, 35, 0.95);
-    border-right: 1px solid rgba(255,255,255,0.1);
-}
-[data-testid="stSidebar"] h1, [data-testid="stSidebar"] h2, [data-testid="stSidebar"] h3 {
-    color: #00E5FF !important; /* Aksen Cyan di Sidebar */
+.hero-title {
+    font-size: 3.5rem;
+    font-weight: 800;
+    color: #FFFFFF;
+    margin-bottom: 0;
+    letter-spacing: -1px;
 }
 
-/* === 10. RESPONSIVE MOBILE === */
-@media (max-width: 768px) {
-    .main .block-container {
-        padding: 1rem;
-        margin: 0.5rem;
-        max-width: 100%;
-    }
-    
-    /* Ubah layout kolom jadi tumpuk di HP */
-    [data-testid="stHorizontalBlock"] {
-        flex-direction: column;
-    }
-    
-    /* Perbesar ukuran tombol di HP */
-    .stButton > button {
-        padding: 0.8rem 1rem;
-    }
+.hero-subtitle {
+    font-size: 1.2rem;
+    color: #AAAAAA;
+    margin-top: 10px;
+    font-weight: 400;
+}
+
+/* === SEARCH BAR === */
+[data-testid="stTextInput"] { border: none; }
+
+div[data-testid="stTextInput"] input {
+    font-size: 1.1rem;
+    padding: 12px 20px;
+    border-radius: 50px;
+    border: 1px solid rgba(255,255,255,0.2);
+    background-color: rgba(30, 30, 30, 0.8);
+    color: white !important;
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+div[data-testid="stTextInput"] input:focus {
+    border-color: #66bb6a; /* HIJAU ALAM */
+    background-color: black;
+    box-shadow: 0 0 15px rgba(102, 187, 106, 0.3);
+}
+
+/* === KARTU TEMPAT === */
+div[data-testid="stVerticalBlockBorderWrapper"] > div {
+    background-color: #161b22;
+    border: 1px solid #30363d;
+    border-radius: 12px;
+    padding: 20px;
+}
+
+h3 {
+    font-size: 1.5rem !important;
+    font-weight: 700 !important;
+    color: #81c784 !important; /* Hijau Muda Lembut */
+    margin-bottom: 5px;
+}
+
+/* Badge Kecocokan */
+.match-pill {
+    background: rgba(102, 187, 106, 0.15);
+    color: #66bb6a;
+    padding: 4px 12px;
+    border-radius: 15px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    border: 1px solid rgba(102, 187, 106, 0.3);
+}
+
+.mini-review {
+    font-size: 0.95rem;
+    color: #bbbbbb;
+    font-style: italic;
+    margin-top: 10px;
+    line-height: 1.5;
+    border-left: 2px solid #555;
+    padding-left: 10px;
+}
+
+/* === MODAL POPUP === */
+div[role="dialog"] h2 {
+    font-size: 1.8rem !important;
+    color: #81c784 !important;
+}
+
+.fas-tag {
+    display: inline-block;
+    background: #21262d;
+    color: #c9d1d9;
+    padding: 6px 12px;
+    margin: 3px;
+    border-radius: 6px;
+    border: 1px solid #30363d;
+    font-size: 0.9rem;
+}
+
+/* Tombol Primary (Lihat Detail) */
+button[kind="primary"] {
+    background-color: #66bb6a !important; /* Tombol Hijau */
+    color: #000 !important;
+    font-weight: 600 !important;
+    border: none !important;
+}
+button[kind="primary"]:hover {
+    opacity: 0.9;
+    box-shadow: 0 0 10px rgba(102, 187, 106, 0.4);
 }

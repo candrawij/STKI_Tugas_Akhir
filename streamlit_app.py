@@ -2,237 +2,184 @@ import streamlit as st
 import pandas as pd
 import os
 import json
-import csv
-import ast
+import base64
 import urllib.parse
-from datetime import datetime
 
-st.set_page_config(page_title="Cari Kemah AI", page_icon="🏕️", layout="wide")
+# --- 1. KONFIGURASI HALAMAN ---
+st.set_page_config(
+    page_title="CariKemah", 
+    page_icon="⛺", 
+    layout="wide",
+    initial_sidebar_state="collapsed"
+)
 
-# --- LOAD MODUL ---
+# --- 2. LOAD MODUL ---
 try:
     from Asisten.smart_search import SmartSearchEngine
-except ImportError:
-    st.error("Modul Asisten/smart_search.py tidak ditemukan.")
-    st.stop()
+    from Asisten.db_handler import db 
+except ImportError: st.stop()
 
-# --- PATH ---
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-DATA_PATH = os.path.join(BASE_DIR, "Documents", "info_tempat.csv") 
-SCORECARD_PATH = os.path.join(BASE_DIR, "Documents", "scorecards.json")
-LOG_FOLDER = os.path.join(BASE_DIR, "Riwayat")
-LOG_PATH = os.path.join(LOG_FOLDER, "riwayat_pencarian.csv")
-
-# --- HELPER ---
-def load_css():
-    st.markdown("""
-    <style>
-        .sub-judul { font-size: 1.2em; color: #555; margin-bottom: 20px; }
-        .badge { padding: 4px 8px; border-radius: 4px; color: white; font-size: 0.8em; margin-right: 5px; }
-        .snippet-text { color: #666; font-style: italic; font-size: 0.9em; }
-    </style>
-    """, unsafe_allow_html=True)
-
-def parse_metadata_column(val):
+# --- 3. ASSETS & CSS ---
+def get_base64_of_bin_file(bin_file):
     try:
-        if pd.isna(val) or val == "": return []
-        if isinstance(val, (list, dict)): return val
-        # Bersihkan string dan coba eval
-        s = str(val).strip()
-        if s.startswith("[") or s.startswith("{"):
-            return ast.literal_eval(s)
-        return []
-    except: return []
+        with open(bin_file, 'rb') as f:
+            data = f.read()
+        return base64.b64encode(data).decode()
+    except: return ""
 
-def save_log(query, count):
-    if not os.path.exists(LOG_FOLDER): os.makedirs(LOG_FOLDER)
-    if not os.path.exists(LOG_PATH):
-        with open(LOG_PATH, "w", newline="", encoding="utf-8") as f:
-            csv.writer(f).writerow(["waktu", "query", "hasil"])
-    try:
-        with open(LOG_PATH, "a", newline="", encoding="utf-8") as f:
-            csv.writer(f).writerow([datetime.now().strftime("%Y-%m-%d %H:%M:%S"), query, count])
-    except: pass
+def set_bg(png_file):
+    bin_str = get_base64_of_bin_file(png_file)
+    if bin_str:
+        st.markdown(f'''
+        <style>
+        [data-testid="stAppViewContainer"] {{
+            /* Overlay Hitam 85% (Lebih Gelap) agar teks mudah dibaca */
+            background-image: linear-gradient(rgba(0, 0, 0, 0.85), rgba(0, 0, 0, 0.95)), url("data:image/jpg;base64,{bin_str}");
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+        }}
+        </style>
+        ''', unsafe_allow_html=True)
 
-load_css()
+set_bg('tent-night-wide.jpg')
 
-# --- INIT ---
+if os.path.exists('style.css'):
+    with open('style.css', encoding='utf-8') as f:
+        st.markdown(f'<style>{f.read()}</style>', unsafe_allow_html=True)
+
+# --- 4. ENGINE & DATA ---
 @st.cache_resource
 def init_engine(): return SmartSearchEngine()
 
 @st.cache_data
-def load_db():
-    sc = {}
-    if os.path.exists(SCORECARD_PATH):
+def load_scorecards():
+    path = "Documents/scorecards.json"
+    if os.path.exists(path):
         try:
-            with open(SCORECARD_PATH, "r") as f: sc = json.load(f)
-        except: pass
-
-    df = pd.DataFrame()
-    if os.path.exists(DATA_PATH):
-        try:
-            df = pd.read_csv(DATA_PATH).fillna("")
-            # Parsing Harga & Fasilitas
-            col_hrg = next((c for c in df.columns if 'price' in c.lower() or 'harga' in c.lower()), None)
-            col_fas = next((c for c in df.columns if 'facilit' in c.lower() or 'fasilitas' in c.lower()), None)
-            
-            if col_hrg: df['parsed_harga'] = df[col_hrg].apply(parse_metadata_column)
-            else: df['parsed_harga'] = [[] for _ in range(len(df))]
-
-            if col_fas: df['parsed_fasilitas'] = df[col_fas].apply(parse_metadata_column)
-            else: df['parsed_fasilitas'] = [[] for _ in range(len(df))]
-        except: pass
-    return sc, df
+            # [FIX] Syntax Multi-line agar tidak error
+            with open(path, encoding='utf-8') as f:
+                return json.load(f)
+        except:
+            return {}
+    return {}
 
 engine = init_engine()
-scorecards, df_info = load_db()
+scorecards = load_scorecards()
 
-# --- SEARCH LOGIC ---
-def run_search(query):
-    if not query: return pd.DataFrame()
+# --- 5. LOGIC PENCARIAN ---
+if 'search_results' not in st.session_state: st.session_state.search_results = pd.DataFrame()
+if 'last_query' not in st.session_state: st.session_state.last_query = ""
+
+def run_search():
+    query = st.session_state.query_input
+    if query:
+        with st.spinner("Sedang mencari..."):
+            if engine.is_ready:
+                # Engine sekarang otomatis pakai CSV Kamus & Intent
+                res = engine.search(query, top_k=60)
+                if not res.empty:
+                    st.session_state.search_results = res.sort_values('Skor Relevansi', ascending=False).drop_duplicates(subset=['Nama Tempat'], keep='first')
+                    st.session_state.last_query = query
+                    try: db.log_search(query, len(st.session_state.search_results))
+                    except: pass
+                else:
+                    st.session_state.search_results = pd.DataFrame()
+            else: st.error("AI belum siap.")
+
+# Helper Formatter
+def format_rp(angka): return f"Rp {int(angka):,}".replace(",", ".")
+
+# Helper Modal
+@st.dialog("Informasi Lengkap", width="large")
+def show_details(row, detail, sc_data):
+    st.markdown(f"<h2 style='text-align:center;'>{row['Nama Tempat']}</h2>", unsafe_allow_html=True)
+    st.markdown(f"<p style='text-align:center; color:#ccc;'>📍 {detail['info'].get('lokasi', '-')}</p>", unsafe_allow_html=True)
     
-    if engine.is_ready:
-        raw = engine.search(query, top_k=100) # Ambil banyak
-        if raw.empty: return pd.DataFrame()
+    tab1, tab2, tab3 = st.tabs(["ℹ️ Info Umum", "💰 Rincian Biaya", "🤖 Analisis Kualitas"])
+    
+    with tab1:
+        st.markdown("### Fasilitas")
+        if detail['fasilitas']:
+            st.markdown("".join([f"<span class='fas-tag'>{f}</span>" for f in detail['fasilitas']]), unsafe_allow_html=True)
+        else: st.warning("Belum ada data fasilitas.")
         
-        # Deduplikasi (Ambil 1 per tempat)
-        seen, unique = set(), []
-        for _, r in raw.iterrows():
-            if r['Nama Tempat'] not in seen:
-                unique.append(r)
-                seen.add(r['Nama Tempat'])
-            if len(unique) >= 10: break
-        return pd.DataFrame(unique)
-    return pd.DataFrame()
+        st.markdown("### Lokasi")
+        link = detail['info'].get('gmaps_link', '#')
+        st.link_button("🗺️ Buka Google Maps", link, use_container_width=True)
 
-# --- MATCHING LOGIC (FUZZY) ---
-def find_info_row(name_query, df_db):
-    if df_db.empty: return pd.Series()
-    q = str(name_query).lower().strip()
+    with tab2:
+        if detail['harga']:
+            df_h = pd.DataFrame(detail['harga'])
+            if 'kategori' in df_h.columns:
+                cats = sorted(df_h['kategori'].unique())
+                for cat in cats:
+                    st.markdown(f"**{cat.title() if cat else 'Lainnya'}**")
+                    items = df_h[df_h['kategori'] == cat]
+                    for _, it in items.iterrows():
+                        c1, c2 = st.columns([3, 1])
+                        c1.write(it['item'])
+                        c2.write(f"**{format_rp(it['harga'])}**")
+                    st.divider()
+            else: st.dataframe(df_h)
+        else: st.info("Info harga belum tersedia.")
+
+    with tab3:
+        st.info("ℹ️ Skor ini dari analisis sentimen ulasan pengunjung.")
+        if sc_data and 'aspects' in sc_data:
+            for key, val in sc_data['aspects'].items():
+                if val['mentions'] > 0:
+                    with st.container(border=True):
+                        c1, c2 = st.columns([1, 4])
+                        c1.markdown(f"## {val['icon']}")
+                        c2.markdown(f"**{val['label']}**")
+                        c2.progress(val['score']/5)
+                        c2.caption(f"⭐ Skor: {val['score']} / 5.0 (Berdasarkan {val['mentions']} ulasan)")
+        else: st.warning("Belum cukup data ulasan.")
+
+# --- 6. UI UTAMA ---
+st.markdown("""
+<div class="hero-container">
+    <h1 class="hero-title">CariKemah</h1>
+    <p class="hero-subtitle">Temukan tempat camping terbaik di Jogja & Jateng</p>
+</div>
+""", unsafe_allow_html=True)
+
+c_spacer1, c_inp, c_spacer2 = st.columns([1, 2, 1])
+with c_inp:
+    st.text_input("Search", placeholder="Ketik 'Semua', 'Jogja', atau 'Pinggir sungai'...", key="query_input", on_change=run_search, label_visibility="collapsed")
+    st.markdown("<p style='text-align:center; font-size:0.9em; color:#ddd;'>Tekan Enter untuk mencari</p>", unsafe_allow_html=True)
+
+# HASIL
+df = st.session_state.search_results
+if not df.empty:
+    st.divider()
+    st.markdown(f"### ✨ Hasil Pencarian: {len(df)} Tempat")
     
-    # 1. Coba Exact Match
-    match = df_db[df_db['Nama_Tempat'].astype(str).str.lower().str.strip() == q]
-    if not match.empty: return match.iloc[0]
-    
-    # 2. Coba Containment (Misal: "Ledok Sambi" in "Ledok Sambi Ecopark")
-    # Cari baris dimana nama di DB mengandung query user ATAU sebaliknya
-    for idx, row in df_db.iterrows():
-        db_name = str(row['Nama_Tempat']).lower().strip()
-        if q in db_name or db_name in q:
-            return row
-            
-    return pd.Series()
-
-# --- ADMIN ---
-with st.sidebar:
-    st.header("⚙️ Admin")
-    if st.checkbox("Dashboard"):
-        if st.text_input("Password", type="password") == "1234":
-            st.success("Login Sukses")
-            st.metric("Total Info", len(df_info))
-            
-            # BACA LOG DENGAN AMAN
-            if os.path.exists(LOG_PATH):
-                try:
-                    # on_bad_lines='skip' akan melewati baris error (misal beda kolom)
-                    df_log = pd.read_csv(LOG_PATH, on_bad_lines='skip')
-                    st.dataframe(df_log.tail(10))
-                except Exception as e:
-                    st.error(f"Error baca log: {e}")
-
-# --- UI ---
-st.title("🏕️ Cari Kemah AI")
-st.markdown('<p class="sub-judul">Temukan Hidden Gems di Jogja & Jateng</p>', unsafe_allow_html=True)
-
-if 'last_df' not in st.session_state: st.session_state.last_df = pd.DataFrame()
-
-c1, c2 = st.columns([3, 1])
-with c1:
-    with st.form("search"):
-        q = st.text_input("Cari", placeholder="Misal: pinggir sungai jogja...")
-        go = st.form_submit_button("Cari")
-with c2:
-    sort = st.selectbox("Urutkan", ["Relevansi AI", "Rating"], label_visibility="collapsed")
-
-if go:
-    res = run_search(q)
-    st.session_state.last_df = res
-    if q: save_log(q, len(res))
-
-final_df = st.session_state.last_df
-if sort == "Rating" and not final_df.empty:
-    final_df = final_df.sort_values(by='Rating', ascending=False)
-
-# --- RENDER ---
-if final_df.empty and go: st.warning("Tidak ditemukan.")
-elif not final_df.empty:
-    if q: st.caption(f"Hasil untuk: **{q}**")
-    
-    for _, row in final_df.iterrows():
+    for i, (_, row) in enumerate(df.iterrows()):
         nama = row['Nama Tempat']
-        lokasi = row['Lokasi']
-        ulasan = row['Isi Ulasan']
+        p_id = db.get_place_by_name(nama)
+        detail = db.get_place_details(p_id) if p_id else {'info':{}, 'harga':[], 'fasilitas':[]}
+        info = detail['info']
+        sc = scorecards.get(nama, {})
         
-        # CARI METADATA (DENGAN LOGIKA BARU)
-        meta = find_info_row(nama, df_info)
-        
-        alamat = lokasi
-        foto = ""
-        maps = "#"
-        parsed_hrg, parsed_fas = [], []
-        
-        if not meta.empty:
-            alamat = meta.get("Alamat") or meta.get("Lokasi") or alamat
-            foto = meta.get("Photo_URL") or ""
-            maps = meta.get("Gmaps_Link") or "#"
-            parsed_hrg = meta.get("parsed_harga", [])
-            parsed_fas = meta.get("parsed_fasilitas", [])
+        foto = info.get('photo_url') 
+        if not foto: foto = f"https://placehold.co/800x450/222/FFF?text={urllib.parse.quote(nama)}"
 
-        sc = scorecards.get(nama)
-        
-        with st.container():
-            c1, c2, c3 = st.columns([1.5, 2.5, 2])
-            with c1:
-                if str(foto).startswith("http"): st.image(foto, use_container_width=True)
-                else: st.image(f"https://placehold.co/400x300/2E8B57/FFFFFF?text={urllib.parse.quote(nama)}", use_container_width=True)
-                st.link_button("📍 Maps", maps, use_container_width=True)
-            
-            with c2:
+        with st.container(border=True):
+            col_img, col_desc, col_act = st.columns([2, 4, 1.5])
+            with col_img:
+                st.image(foto, use_container_width=True)
+            with col_desc:
                 st.subheader(nama)
-                st.caption(f"📍 {alamat}")
-                
-                # Snippet
-                if len(ulasan) > 5:
-                    snip = ulasan[:150] + "..." if len(ulasan) > 150 else ulasan
-                    st.markdown(f"<div style='background:#f0f2f6;padding:8px;border-radius:4px;font-size:0.9em'><i>\"{snip}\"</i><br><small>📅 {row['Tanggal Ulasan']}</small></div>", unsafe_allow_html=True)
-                
-                # POPUP HARGA
-                if st.button("💰 Cek Harga", key=f"btn_{nama}"):
-                    @st.dialog(f"Info: {nama}")
-                    def pop():
-                        if not parsed_hrg: st.warning("Data harga belum tersedia.")
-                        else:
-                            st.write("**Daftar Harga:**")
-                            for p in parsed_hrg:
-                                if isinstance(p, dict):
-                                    st.write(f"- {p.get('Item','Item')}: Rp {p.get('Harga','0')}")
-                        
-                        st.divider()
-                        st.write("**Fasilitas:**")
-                        if parsed_fas and isinstance(parsed_fas, list):
-                            for f in parsed_fas:
-                                val = list(f.values())[0] if isinstance(f, dict) else f
-                                st.write(f"• {val}")
-                        else: st.caption("-")
-                    pop()
+                st.markdown(f"<span class='match-pill'>{row['Skor Relevansi']}% Sesuai</span>", unsafe_allow_html=True)
+                st.caption(f"📍 {info.get('lokasi', row['Lokasi'])}")
+                st.markdown(f"<div class='mini-review'>💬 \"{str(row['Isi Ulasan'])[:150]}...\"</div>", unsafe_allow_html=True)
+            with col_act:
+                st.write("")
+                st.write("")
+                if st.button("📄 Lihat Detail", key=f"btn_{i}", type="primary", use_container_width=True):
+                    show_details(row, detail, sc)
 
-            with c3:
-                if sc:
-                    st.markdown("##### 📊 Rapor")
-                    for asp in sc.get('aspects', {}).values():
-                        if asp.get('mentions', 0) > 0:
-                            ca, cb = st.columns([1,1])
-                            ca.write(f"{asp['icon']} {asp['label']}")
-                            st.progress(asp['score']/5)
-                else: st.caption("Belum ada rapor.")
-        st.divider()
+elif st.session_state.last_query:
+    st.warning("Tidak ditemukan hasil yang cocok.")
