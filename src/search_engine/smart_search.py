@@ -2,32 +2,40 @@ import pandas as pd
 import numpy as np
 import os
 import re
+import sys
 from gensim.models import Word2Vec
 from sklearn.metrics.pairwise import cosine_similarity
 
-# DATABASE HANDLER
+# --- 1. SETUP PATH & IMPORT DATABASE ---
+# File ini ada di: CampGround_Word2Vec/src/search_engine/smart_search.py
+# Kita perlu naik 3 level untuk ke Root (src -> search_engine -> smart_search.py)
+CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
+# BASE_DIR = CampGround_Word2Vec/
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(CURRENT_DIR)))
+
+# Model Path (models/word2vec.model)
+MODEL_PATH = os.path.join(BASE_DIR, 'models', 'word2vec.model')
+
+# Import DB Handler dengan path absolute
 try:
-    from Asisten.db_handler import db
+    from src.database.db_handler import db
 except ImportError:
-    import sys
-    sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-    from Asisten.db_handler import db
+    # Fallback path trick
+    sys.path.append(BASE_DIR)
+    try:
+        from src.database.db_handler import db
+    except ImportError:
+        # Fallback terakhir banget (manual connect)
+        import sqlite3
+        class DBHandler:
+            def get_connection(self): return sqlite3.connect(os.path.join(BASE_DIR, 'camping.db'))
+        db = DBHandler()
 
-# PATH
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-MODEL_PATH = os.path.join(BASE_DIR, 'Assets', 'word2vec.model')
-
-# BOBOT (Keyword dominan untuk akurasi teks)
+# --- 2. KONSTANTA (SAMA SEPERTI SEBELUMNYA) ---
 WEIGHT_SEMANTIC = 0.3
 WEIGHT_KEYWORD = 0.7
-
-# STOPWORDS
 STOPWORDS = ["tempat", "lokasi", "di", "ke", "yang", "dan", "ini", "itu", "ada", "buat", "sangat", "banget", "untuk", "yg", "juga", "dengan", "secara", "karena", "kalo", "sih", "nya", "dr", "dari", "wisata", "camping", "ground", "kemah"]
-
-# NEGASI
 NEGATION_WORDS = ["tidak", "gak", "kurang", "jangan", "bukan", "no", "ga", "minus", "sayang", "kecewa", "tapi", "belum", "agak", "cuma", "hanya"]
-
-# ANTONIM
 ANTONYM_MAP = {
     "bersih": ["kotor", "jorok", "bau", "sampah", "berantakan", "kumuh", "licin", "kurang"],
     "luas": ["sempit", "sesak", "kecil", "padat"],
@@ -37,11 +45,8 @@ ANTONYM_MAP = {
     "murah": ["mahal", "pricey", "nembak", "boros"],
     "bagus": ["jelek", "buruk", "kecewa", "zonk", "biasa", "kurang"],
     "ramah": ["jutek", "galak", "kasar", "cuek", "lambat"],
-    "aman": ["rawan", "takut", "bahaya", "hilang"],
-    "pemandanganindah": ["jelek", "buruk", "biasa", "ketutup", "halang", "kecewa", "zonk"]
+    "aman": ["rawan", "takut", "bahaya", "hilang"]
 }
-
-# SINONIM
 KEYWORD_SYNONYMS = {
     "angker": ["seram", "mistis", "hantu", "menakutkan", "gelap", "kuntilanak", "pocong", "wingit", "singup"],
     "kamar mandi": ["toilet", "wc", "klozet", "mck", "kamar kecil", "km/wc", "kamar"],
@@ -49,49 +54,56 @@ KEYWORD_SYNONYMS = {
     "bersih": ["terawat", "kinclong", "rapi", "higienis", "wangi"],
     "sejuk": ["dingin", "adem", "segar", "asri", "kabut"],
     "listrik": ["colokan", "stop kontak", "charging", "cas", "kabel", "cok"],
-    "sungai": ["kali", "river", "air", "aliran", "gemericik", "water"],
-    "pemandangan": ["view", "panorama", "landscape", "scenery", "alam", "gunung", "bukit"],
-    "pemandanganindah": ["pemandangan", "view", "panorama", "alam", "landscape", "gunung", "bukit"] 
+    "sungai": ["kali", "river", "air", "aliran", "gemericik", "water"]
 }
 
+# --- 3. CLASS UTAMA ---
 class SmartSearchEngine:
     def __init__(self):
         self.model = None
         self.df = None
         self.doc_vectors = None
         self.is_ready = False
-        self.phrase_dict = {}     
-        self.reverse_phrase = {} 
+        
+        self.phrase_dict = {}
+        self.reverse_phrase = {}
         self.region_dict = {}
         self.intent_dict = {}
+        
         self.load_configs()
         self.load_resources()
 
     def _find_file(self, filename):
-        possible_paths = [
-            os.path.join(BASE_DIR, filename),
+        """Mencari file konfigurasi di folder data/dictionaries"""
+        # Prioritas: data/dictionaries/filename
+        path = os.path.join(BASE_DIR, 'data', 'dictionaries', filename)
+        if os.path.exists(path): return path
+        
+        # Fallback (barangkali masih di folder lama)
+        fallback_paths = [
             os.path.join(BASE_DIR, 'Kamus', filename),
-            os.path.join(BASE_DIR, 'Asisten', filename),
-            os.path.join(BASE_DIR, 'Asisten', 'Kamus', filename)
+            os.path.join(BASE_DIR, filename)
         ]
-        for path in possible_paths:
-            if os.path.exists(path): return path
+        for p in fallback_paths:
+            if os.path.exists(p): return p
         return None
 
     def load_configs(self):
         try:
+            # 1. Load Phrase Map
             path_ph = self._find_file('config_phrase_map.csv')
             if path_ph:
                 df_ph = pd.read_csv(path_ph)
-                df_ph['len'] = df_ph['Phrase'].str.len()
+                df_ph['len'] = df_ph['Phrase'].astype(str).str.len()
                 sorted_ph = df_ph.sort_values('len', ascending=False)
                 self.phrase_dict = dict(zip(sorted_ph['Phrase'], sorted_ph['Token']))
                 for _, row in sorted_ph.iterrows():
-                    token = row['Token']
-                    phrase = row['Phrase']
+                    token = row['Token']; phrase = row['Phrase']
                     if token not in self.reverse_phrase: self.reverse_phrase[token] = []
                     self.reverse_phrase[token].append(phrase)
+                print("✅ Config Phrase Map Loaded")
 
+            # 2. Load Region Map
             path_rg = self._find_file('config_region_map.csv')
             if path_rg:
                 df_rg = pd.read_csv(path_rg)
@@ -100,17 +112,22 @@ class SmartSearchEngine:
                     term = str(row['location_term']).lower()
                     if code not in self.region_dict: self.region_dict[code] = []
                     self.region_dict[code].append(term)
+                print("✅ Config Region Map Loaded")
 
+            # 3. Load Intent
             path_in = self._find_file('config_special_intent.csv')
             if path_in:
                 df_in = pd.read_csv(path_in)
                 self.intent_dict = dict(zip(df_in['intent_phrase'], df_in['intent_code']))
-        except Exception as e: print(f"⚠️ Config Error: {e}")
+                print("✅ Config Intent Loaded")
+
+        except Exception as e:
+            print(f"⚠️ Config Error: {e}")
 
     def load_resources(self):
         try:
             conn = db.get_connection()
-            query = """SELECT u.teks_bersih, u.teks_mentah, u.waktu_ulasan, t.nama, t.lokasi, t.rating_gmaps 
+            query = """SELECT t.id, u.teks_bersih, u.teks_mentah, t.nama, t.lokasi, t.rating_gmaps 
                        FROM ulasan u JOIN tempat t ON u.tempat_id = t.id 
                        WHERE u.teks_bersih IS NOT NULL AND u.teks_bersih != ''"""
             self.df = pd.read_sql_query(query, conn)
@@ -119,13 +136,19 @@ class SmartSearchEngine:
             self.df['teks_mentah'] = self.df['teks_mentah'].fillna("").astype(str)
             self.df['teks_bersih'] = self.df['teks_bersih'].fillna("").astype(str)
             self.df['lokasi_lower'] = self.df['lokasi'].astype(str).str.lower()
-            self.df['nama_lower'] = self.df['nama'].astype(str).str.lower() # [BARU] Kolom nama lowercase
+            self.df['nama_lower'] = self.df['nama'].astype(str).str.lower()
             self.df['rating_gmaps'] = pd.to_numeric(self.df['rating_gmaps'], errors='coerce').fillna(0.0)
-        except: return
+        except Exception as e: 
+            print(f"❌ DB Load Error: {e}")
+            return
 
         if os.path.exists(MODEL_PATH):
-            try: self.model = Word2Vec.load(MODEL_PATH)
-            except: pass
+            try: 
+                self.model = Word2Vec.load(MODEL_PATH)
+                print(f"✅ Model AI Loaded form {MODEL_PATH}")
+            except: print("❌ Model AI Corrupt/Error")
+        else:
+            print(f"❌ Model not found at {MODEL_PATH}")
         
         if not self.df.empty and self.model:
             self.doc_vectors = np.array([self.get_vector(t) for t in self.df['teks_bersih']])
@@ -143,6 +166,7 @@ class SmartSearchEngine:
         if q in self.intent_dict: return q, self.intent_dict[q]
         for phrase, token in self.phrase_dict.items():
             if phrase in q: q = q.replace(phrase, token)
+        q = re.sub(r'[^\w\s]', '', q)
         return q, None
 
     def detect_region_filter(self, query):
@@ -152,11 +176,10 @@ class SmartSearchEngine:
             for term in terms:
                 if term in q_lower:
                     detected.extend(terms)
-                    break
+                    break 
         return list(set(detected))
 
     def calculate_smart_score(self, query_tokens, text):
-        # (Logika ini tetap sama seperti sebelumnya untuk analisis ulasan)
         text_lower = text.lower()
         words = re.findall(r'\w+', text_lower)
         matches = 0
@@ -193,7 +216,6 @@ class SmartSearchEngine:
         return final_score
 
     def apply_antonym_penalty(self, query_tokens, text, current_score):
-        # (Logika ini tetap sama)
         text_lower = text.lower()
         penalty = 1.0
         check_tokens = [t for t in query_tokens if t not in STOPWORDS]
@@ -203,8 +225,8 @@ class SmartSearchEngine:
             for k in keys_to_check:
                 match_key = k if k in ANTONYM_MAP else next((key for key in ANTONYM_MAP if key == token), None)
                 if match_key:
-                    for bad in ANTONYM_MAP[match_key]:
-                        if bad in text_lower:
+                    for bad_word in ANTONYM_MAP[match_key]:
+                        if bad_word in text_lower:
                             penalty *= 0.1
                             break
         return current_score * penalty
@@ -214,7 +236,6 @@ class SmartSearchEngine:
 
         clean_query, intent = self.preprocess_query(query)
         
-        # Intent Handler
         if intent == "ALL":
             return self.df.drop_duplicates(subset=['nama']).assign(**{"Skor Relevansi": 100.0}).head(100)
         elif intent == "RATING_TOP":
@@ -223,44 +244,30 @@ class SmartSearchEngine:
             bad_places = self.df[self.df['rating_gmaps'] > 0.1].sort_values('rating_gmaps', ascending=True)
             return bad_places.drop_duplicates(subset=['nama']).assign(**{"Skor Relevansi": 100.0}).head(20)
 
-        # 1. Hitung Skor Ulasan (Review) - Semantic + Keyword
         query_vec = self.get_vector(clean_query).reshape(1, -1)
-        semantic_scores = cosine_similarity(query_vec, self.doc_vectors)[0]
+        if np.all(query_vec == 0): semantic_scores = np.zeros(len(self.df))
+        else: semantic_scores = cosine_similarity(query_vec, self.doc_vectors)[0]
         
         query_tokens = clean_query.split()
         keyword_scores = np.array([self.calculate_smart_score(query_tokens, t) for t in self.df['teks_mentah']])
         
         final_scores = (semantic_scores * WEIGHT_SEMANTIC) + (keyword_scores * WEIGHT_KEYWORD)
         
-        # Zero Tolerance Review
         has_important_tokens = any(t not in STOPWORDS for t in query_tokens)
         if has_important_tokens:
             final_scores = final_scores * np.where(keyword_scores > 0, 1.0, 0.0)
 
-        # 2. [BARU] Hitung Skor Kecocokan Nama Tempat & Lokasi (Name Match)
-        # Jika user mencari nama tempat spesifik (misal: "karimun jawa"), skor harus tinggi
-        # meskipun di ulasannya tidak ada kata tersebut.
-        name_scores = np.zeros(len(self.df))
-        query_lower = query.lower() # Gunakan query asli user, bukan yang sudah di-clean berlebihan
-        
-        # Cek apakah query ada di Nama Tempat atau Lokasi
-        mask_name = self.df['nama_lower'].str.contains(query_lower, na=False, regex=False)
-        mask_loc = self.df['lokasi_lower'].str.contains(query_lower, na=False, regex=False)
-        
-        # Berikan skor 99% (0.99) jika nama/lokasi cocok
+        query_original_lower = query.lower()
+        mask_name = self.df['nama_lower'].str.contains(query_original_lower, na=False, regex=False)
+        mask_loc = self.df['lokasi_lower'].str.contains(query_original_lower, na=False, regex=False)
         name_scores = np.where(mask_name | mask_loc, 0.99, 0.0)
-        
-        # GABUNGKAN SKOR: Ambil nilai maksimal antara Skor Ulasan vs Skor Nama
-        # Jadi kalau ulasannya jelek tapi namanya cocok, tetap muncul.
         final_scores = np.maximum(final_scores, name_scores)
 
-        # 3. Filter Wilayah
         target_regions = self.detect_region_filter(query)
         if target_regions:
-            mask = self.df['lokasi_lower'].apply(lambda x: any(r in x for r in target_regions))
-            final_scores = final_scores * np.where(mask, 1.0, 0.0)
+            mask_region = self.df['lokasi_lower'].apply(lambda x: any(r in x for r in target_regions))
+            final_scores = final_scores * np.where(mask_region, 1.0, 0.0)
 
-        # 4. Result Construction
         results = []
         top_indices = final_scores.argsort()[::-1][:top_k*5]
 
@@ -269,9 +276,6 @@ class SmartSearchEngine:
             if raw_score <= 0.01: continue 
             
             text = self.df.iloc[idx]['teks_mentah']
-            
-            # Terapkan penalti antonim HANYA jika skornya berasal dari ulasan (bukan dari nama tempat)
-            # Jika skor > 0.9 (berarti match nama), jangan dipenalti
             final_score_processed = raw_score
             if raw_score < 0.9: 
                 final_score_processed = self.apply_antonym_penalty(query_tokens, text, raw_score)

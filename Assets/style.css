@@ -1,0 +1,125 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+html, body, [class*="css"] {
+    font-family: 'Poppins', sans-serif;
+    color: #2d3436;
+}
+
+/* Sembunyikan elemen bawaan */
+#MainMenu, header, footer {visibility: hidden;}
+.stApp { margin-top: -60px; }
+
+/* -----------------------------------------------------------
+   1. NAVBAR (CLEAN & STICKY)
+----------------------------------------------------------- */
+div[data-testid="stVerticalBlock"] > div:has(div[data-testid="stHorizontalBlock"]) {
+    background-color: #ffffff; 
+    padding: 15px 0;
+    position: sticky;
+    top: 0;
+    z-index: 999;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.03); /* Shadow halus */
+}
+
+/* Tombol Navigasi */
+.stButton > button {
+    background-color: transparent !important;
+    border: none !important;
+    color: #555 !important;
+    box-shadow: none !important;
+    font-weight: 500 !important;
+}
+.stButton > button:hover {
+    color: #0984e3 !important;
+    background-color: #f0f7fc !important;
+    border-radius: 8px !important;
+}
+
+/* Tombol Primary (Biru) */
+.stButton > button[kind="primary"] {
+    background-color: #0984e3 !important; 
+    color: white !important;
+    border-radius: 8px !important;
+    font-weight: 600 !important;
+    padding: 0.5rem 1.5rem !important;
+    box-shadow: 0 4px 15px rgba(9, 132, 227, 0.3) !important;
+}
+.stButton > button[kind="primary"]:hover {
+    background-color: #0077c8 !important;
+    transform: translateY(-2px);
+}
+
+/* -----------------------------------------------------------
+   2. HERO SECTION
+----------------------------------------------------------- */
+.hero-wrapper {
+    background-size: cover;
+    background-position: center;
+    padding: 140px 20px 100px 20px; 
+    border-radius: 0 0 40px 40px;
+    text-align: center;
+    color: white;
+    margin-bottom: 40px;
+}
+.hero-overlay {
+    position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0, 0, 0, 0.4); border-radius: 0 0 40px 40px; z-index: 1;
+}
+.hero-content { position: relative; z-index: 2; }
+.hero-title { font-size: 3.5rem; font-weight: 700; margin-bottom: 10px; color: #fff; }
+
+/* -----------------------------------------------------------
+   3. MAGIC CARD STYLE (SOLUSI KOTAK-KOTAK)
+   Ini mengubah st.container(border=True) menjadi kartu halus
+----------------------------------------------------------- */
+div[data-testid="stContainer"] {
+    background-color: white;
+    border: none !important; /* HAPUS GARIS KOTAK */
+    border-radius: 16px !important;
+    /* Ganti garis dengan shadow halus */
+    box-shadow: 0 2px 15px rgba(0,0,0,0.05) !important; 
+    padding: 15px;
+    margin-bottom: 15px;
+    transition: transform 0.2s;
+}
+
+/* Efek hover pada card agar interaktif */
+div[data-testid="stContainer"]:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.08) !important;
+}
+
+/* -----------------------------------------------------------
+   4. TICKET & DETAIL STYLE
+----------------------------------------------------------- */
+.card-title { font-size: 1.3rem; font-weight: 700; color: #2d3436; }
+.card-location { color: #888; font-size: 0.9rem; margin-bottom: 5px; }
+.card-rating { color: #f1c40f; font-weight: 700; font-size: 0.9rem; }
+.card-price-value { font-size: 1.4rem; font-weight: 700; color: #e67e22; text-align: right; }
+
+/* Chips Fasilitas */
+.fas-tag {
+    background-color: #f1f2f6; color: #555;
+    padding: 5px 12px; border-radius: 20px; font-size: 0.8rem;
+    margin-right: 5px; display: inline-block;
+}
+
+/* Review Box */
+.review-box {
+    background-color: #f9f9f9; border-left: 3px solid #0984e3;
+    padding: 15px; border-radius: 0 8px 8px 0;
+    font-style: italic; color: #555; margin-top: 10px;
+}
+
+/* Ticket Header */
+.ticket-header {
+    border-bottom: 1px dashed #eee;
+    padding-bottom: 10px; margin-bottom: 15px;
+    display: flex; justify-content: space-between;
+}
+.status-badge {
+    padding: 4px 10px; border-radius: 12px; font-size: 0.75rem; font-weight: 700;
+}
+.status-pending { background: #fff3cd; color: #856404; }
+.status-confirmed { background: #d4edda; color: #155724; }
+.status-rejected { background: #f8d7da; color: #721c24; }
