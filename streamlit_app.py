@@ -18,50 +18,30 @@ def get_img_as_base64(file):
 def format_rp(angka): 
     return f"Rp {int(angka):,}".replace(",", ".")
 
-# --- FUNGSI GENERATE E-TICKET (HTML DOWNLOAD) ---
 def create_ticket_html(ticket_data, username):
-    """HTML E-Ticket Generator (Traveloka Style)"""
+    """HTML E-Ticket Generator"""
     html = f"""
-    <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 600px; margin: auto; border: 1px solid #e0e0e0; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
-        <div style="background-color: #0984e3; color: white; padding: 20px; text-align: center;">
-            <h2 style="margin: 0; font-size: 24px;">⛺ CariKemah.id</h2>
-            <p style="margin: 5px 0 0 0; font-size: 14px; opacity: 0.9;">E-Ticket Reservation</p>
+    <div style="font-family: sans-serif; border: 1px solid #e0e0e0; border-radius: 12px; padding: 20px; max-width: 600px; margin: auto;">
+        <div style="border-bottom: 2px dashed #ccc; padding-bottom: 15px; margin-bottom: 15px; text-align: center;">
+            <h2 style="color: #0984e3; margin: 0;">⛺ CariKemah.id</h2>
+            <p style="margin: 5px 0; color: #888;">E-Ticket Reservation</p>
         </div>
-        <div style="padding: 25px;">
-            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px;">
-                <div>
-                    <div style="font-size: 12px; color: #888; text-transform: uppercase; letter-spacing: 1px;">Booking ID</div>
-                    <div style="font-size: 18px; font-weight: bold; color: #333;">#{ticket_data['id']}</div>
-                </div>
-                <div style="text-align: right;">
-                    <span style="background-color: #d4edda; color: #155724; padding: 5px 12px; border-radius: 20px; font-size: 12px; font-weight: bold;">CONFIRMED</span>
-                </div>
+        <div style="display: flex; justify-content: space-between;">
+            <div>
+                <p><strong>Booking ID:</strong> #{ticket_data['id']}</p>
+                <h3 style="margin: 10px 0;">{ticket_data['nama']}</h3>
+                <p>Check-in: {ticket_data['tanggal_checkin']}</p>
             </div>
-            
-            <hr style="border: 0; border-top: 1px dashed #ddd; margin: 20px 0;">
-            
-            <h3 style="margin: 0 0 15px 0; color: #0984e3;">{ticket_data['nama']}</h3>
-            
-            <div style="display: flex; justify-content: space-between; margin-bottom: 15px;">
-                <div style="flex: 1;">
-                    <div style="font-size: 12px; color: #888;">Check-in Date</div>
-                    <div style="font-weight: 500;">{ticket_data['tanggal_checkin']}</div>
-                </div>
-                <div style="flex: 1;">
-                    <div style="font-size: 12px; color: #888;">Guest/Unit</div>
-                    <div style="font-weight: 500;">{ticket_data['jumlah_orang']} Pax</div>
-                </div>
-            </div>
-            
-            <div style="background-color: #f8f9fa; padding: 15px; border-radius: 8px; margin-top: 20px;">
-                <div style="display: flex; justify-content: space-between; align-items: center;">
-                    <span style="color: #666;">Total Paid</span>
-                    <span style="font-size: 20px; font-weight: bold; color: #e67e22;">{format_rp(ticket_data['total_harga'])}</span>
-                </div>
+            <div style="text-align: right;">
+                <span style="background: #d4edda; color: #155724; padding: 5px 10px; border-radius: 5px; font-weight: bold;">CONFIRMED</span>
+                <p style="margin-top: 10px;">{username}</p>
+                <p>{ticket_data['jumlah_orang']} Pax/Unit</p>
             </div>
         </div>
-        <div style="background-color: #f1f2f6; padding: 15px; text-align: center; font-size: 12px; color: #888;">
-            Please show this ticket upon arrival. <br>Ordered by: <strong>{username}</strong>
+        <hr>
+        <div style="text-align: center; background: #f9f9f9; padding: 10px; border-radius: 8px;">
+            <p style="margin: 0; color: #555;">Total Paid</p>
+            <h2 style="margin: 5px 0; color: #e67e22;">{format_rp(ticket_data['total_harga'])}</h2>
         </div>
     </div>
     """
@@ -71,7 +51,9 @@ def create_ticket_html(ticket_data, username):
 try:
     from Asisten.db_handler import db
     from Asisten.smart_search import SmartSearchEngine
-except ImportError: st.stop()
+except ImportError: 
+    st.error("Gagal memuat modul Asisten. Pastikan folder Asisten ada.")
+    st.stop()
 
 @st.cache_resource
 def init_engine(): return SmartSearchEngine()
@@ -82,14 +64,13 @@ if 'user' not in st.session_state: st.session_state.user = None
 if 'show_login' not in st.session_state: st.session_state.show_login = False
 if 'query_input' not in st.session_state: st.session_state.query_input = ""
 if 'page' not in st.session_state: st.session_state.page = "home"
-# [BARU] State untuk mencegah log duplikat saat refresh halaman
-if 'last_logged_query' not in st.session_state: st.session_state.last_logged_query = ""
+# State untuk mencegah double log
+if 'last_logged' not in st.session_state: st.session_state.last_logged = ""
 
 # --- ASSETS ---
 bg_img = get_img_as_base64("tent-night-wide.jpg") if os.path.exists("tent-night-wide.jpg") else ""
 logo_img = get_img_as_base64("logo.png") if os.path.exists("logo.png") else ""
 
-# Inject CSS Global
 st.markdown(f"""
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
@@ -103,7 +84,6 @@ if os.path.exists('style.css'):
         st.markdown(f'<style>{css_code}</style>', unsafe_allow_html=True)
 
 # --- 4. COMPONENTS ---
-
 def render_navbar():
     with st.container():
         c_logo, c_space, c_menu = st.columns([2, 5, 4])
@@ -114,8 +94,6 @@ def render_navbar():
         with c_menu:
             user = st.session_state.user
             is_admin = user and user['role'] == 'admin'
-            
-            # Navigasi Dinamis
             if user:
                 cols = st.columns([1, 1, 1.5, 1])
                 with cols[0]:
@@ -176,12 +154,11 @@ def show_details(row, detail, sc_data):
     with t1:
         st.markdown("#### Fasilitas")
         if detail['fasilitas']:
-            # Render chips facility
             chips = "".join([f"<span class='fas-tag'>{f}</span>" for f in detail['fasilitas']])
             st.markdown(chips, unsafe_allow_html=True)
         else: st.info("-")
         st.write("")
-        st.markdown("#### Apa kata pengunjung?")
+        st.markdown("#### Review Pengunjung")
         st.markdown(f"<div class='review-box'>\"{str(row['Isi Ulasan'])[:400]}...\"</div>", unsafe_allow_html=True)
     
     with t2:
@@ -216,10 +193,7 @@ def show_details(row, detail, sc_data):
             """, unsafe_allow_html=True)
             
             if st.button("✅ Konfirmasi Booking", type="primary", use_container_width=True):
-                # Fallback ID logic
-                tid = detail['info'].get('id')
-                if not tid: tid = db.get_place_by_name(row['Nama Tempat'])
-                
+                tid = detail['info'].get('id') or db.get_place_by_name(row['Nama Tempat'])
                 if db.add_booking(st.session_state.user['id'], tid, str(dt), qt, tot):
                     st.success("🎉 Berhasil! Cek Tiket Saya."); time.sleep(2); st.rerun()
 
@@ -239,7 +213,7 @@ if st.session_state.page == "home":
     </div>
     """, unsafe_allow_html=True)
     
-    # SEARCH BAR (Floating)
+    # SEARCH BAR
     c1, c2, c3 = st.columns([1, 6, 1])
     with c2:
         with st.container(border=True):
@@ -253,23 +227,21 @@ if st.session_state.page == "home":
     
     query = st.session_state.get('query_input')
     
-    # HASIL PENCARIAN (DENGAN LOGGING DATABASE)
+    # HASIL PENCARIAN (FIXED LOGGING)
     if query:
         st.write(""); st.markdown(f"### 🔎 Hasil: '{query}'")
         with st.spinner("AI sedang mencari..."):
             fq = f"{query} {st.session_state.get('filter_cat','Semua')}" if st.session_state.get('filter_cat') != 'Semua' else query
-            res = engine.search(fq, top_k=20)
             
-            # --- [LOGIC BARU] CATAT KE DATABASE ---
-            # Kita cek apakah query ini sama dengan yang terakhir di-log agar tidak duplikat saat klik detail
-            if st.session_state.last_logged_query != fq:
-                try:
-                    db.log_search(fq, len(res))
-                    st.session_state.last_logged_query = fq
-                    # print(f"✅ Logged to DB: {fq}")
-                except Exception as e:
-                    print(f"❌ Failed logging: {e}")
-            # --------------------------------------
+            # Hitung durasi pencarian
+            start_time = time.time()
+            res = engine.search(fq, top_k=20)
+            duration = time.time() - start_time
+            
+            # Log ke Database (Anti Duplikat)
+            if st.session_state.last_logged != fq:
+                db.log_search(fq, len(res), duration)
+                st.session_state.last_logged = fq
         
         if res.empty: st.warning("Tidak ditemukan.")
         else:
@@ -296,7 +268,7 @@ if st.session_state.page == "home":
                         st.write("")
                         if st.button("Pilih", key=f"b_{i}", type="primary", use_container_width=True): show_details(row, det, {})
     else:
-        # LANDING PAGE CONTENT
+        # LANDING PAGE
         st.markdown("<br><br>", unsafe_allow_html=True)
         col_icon = st.columns(4)
         icons = [("🏔️","Gunung"),("🏖️","Pantai"),("⛺","Glamping"),("🔥","Campervan")]
@@ -326,11 +298,10 @@ if st.session_state.page == "home":
                     st.markdown(f"<div style='color:#e67e22; font-weight:bold'>{sp}</div>", unsafe_allow_html=True)
                     if st.button("Detail", key=f"d_{row['id']}", use_container_width=True):
                         det = db.get_place_details(row['id'])
-                        # Dummy row for show_details compatibility
-                        dummy = {'Nama Tempat': row['nama'], 'Isi Ulasan': "Destinasi populer pilihan wisatawan.", 'Lokasi': row['lokasi']}
+                        dummy = {'Nama Tempat': row['nama'], 'Isi Ulasan': "Destinasi populer.", 'Lokasi': row['lokasi']}
                         show_details(dummy, det, {})
 
-# === PAGE: TIKET SAYA ===
+# === PAGE: TIKET ===
 elif st.session_state.page == "tickets":
     st.markdown("## 🎫 Tiket & Pesanan Saya")
     if not st.session_state.user: st.warning("Silakan Login terlebih dahulu.")
@@ -368,22 +339,18 @@ elif st.session_state.page == "tickets":
 elif st.session_state.page == "admin":
     st.title("Admin Panel")
     if st.session_state.user and st.session_state.user['role']=='admin':
-        # [BARU] Tampilkan Grafik Riwayat Pencarian
-        st.subheader("📈 Tren Pencarian")
+        # GRAFIK PENCARIAN
+        st.subheader("📈 Statistik Pencarian")
         try:
-            df_hist = db.get_search_history(limit=20)
+            df_hist = db.get_search_history(limit=50)
             if not df_hist.empty:
                 st.dataframe(df_hist, use_container_width=True)
-                # Trik sederhana bar chart
                 if 'jumlah_hasil' in df_hist.columns:
                     st.bar_chart(df_hist.set_index('query')['jumlah_hasil'])
-            else:
-                st.info("Belum ada data pencarian.")
-        except Exception as e: st.error(f"Gagal memuat statistik: {e}")
+            else: st.info("Belum ada data.")
+        except Exception as e: st.error(f"Error grafik: {e}")
 
         st.divider()
-        
-        # Dashboard Pesanan
         df = db.get_all_bookings_admin()
         c1, c2, c3 = st.columns(3)
         with c1: st.metric("Total Pesanan", len(df))

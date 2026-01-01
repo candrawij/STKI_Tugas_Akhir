@@ -200,7 +200,6 @@ html, body, [class*="css"] {
 
 /* KHUSUS NAV BUTTON (Kita akan kasih key khusus nanti) */
 div[data-testid="stHorizontalBlock"] .stButton > button {
-    background-color: transparent;
     color: #333; /* Sesuaikan jika dark mode: #fff */
     border: none;
     box-shadow: none;
