@@ -64,7 +64,6 @@ if 'user' not in st.session_state: st.session_state.user = None
 if 'show_login' not in st.session_state: st.session_state.show_login = False
 if 'query_input' not in st.session_state: st.session_state.query_input = ""
 if 'page' not in st.session_state: st.session_state.page = "home"
-# State untuk mencegah double log
 if 'last_logged' not in st.session_state: st.session_state.last_logged = ""
 
 # --- ASSETS ---
@@ -227,21 +226,30 @@ if st.session_state.page == "home":
     
     query = st.session_state.get('query_input')
     
-    # HASIL PENCARIAN (FIXED LOGGING)
+    # HASIL PENCARIAN
     if query:
         st.write(""); st.markdown(f"### 🔎 Hasil: '{query}'")
         with st.spinner("AI sedang mencari..."):
             fq = f"{query} {st.session_state.get('filter_cat','Semua')}" if st.session_state.get('filter_cat') != 'Semua' else query
             
-            # Hitung durasi pencarian
             start_time = time.time()
-            res = engine.search(fq, top_k=20)
+            res, debug_info = engine.search(fq, top_k=20) 
             duration = time.time() - start_time
             
-            # Log ke Database (Anti Duplikat)
             if st.session_state.last_logged != fq:
-                db.log_search(fq, len(res), duration)
-                st.session_state.last_logged = fq
+                try:
+                    db.log_search(
+                        query=fq,
+                        query_clean=debug_info.get('query_clean', fq),
+                        count=len(res),
+                        top_result=debug_info.get('top_result', '-'),
+                        duration=duration,
+                        intent=debug_info.get('intent', None),
+                        region=debug_info.get('region', None)
+                    )
+                    st.session_state.last_logged = fq
+                except Exception as e:
+                    print(f"Logging Error: {e}")
         
         if res.empty: st.warning("Tidak ditemukan.")
         else:
@@ -268,16 +276,33 @@ if st.session_state.page == "home":
                         st.write("")
                         if st.button("Pilih", key=f"b_{i}", type="primary", use_container_width=True): show_details(row, det, {})
     else:
-        # LANDING PAGE
+        # --- LANDING PAGE: KATEGORI CEPAT (FITUR BARU) ---
         st.markdown("<br><br>", unsafe_allow_html=True)
         col_icon = st.columns(4)
-        icons = [("🏔️","Gunung"),("🏖️","Pantai"),("⛺","Glamping"),("🔥","Campervan")]
-        for idx, (ic, tx) in enumerate(icons):
-            with col_icon[idx]: st.markdown(f"<div class='cat-box'><span style='font-size:30px'>{ic}</span><span style='font-size:12px; font-weight:bold; color:#555'>{tx}</span></div>", unsafe_allow_html=True)
         
+        # Dictionary Kategori: (Label, Keyword Pencarian)
+        cats = [("🏔️ Gunung", "tempat kemah di gunung"), 
+                ("🏖️ Pantai", "tempat kemah di pantai"), 
+                ("⛺ Glamping", "tempat glamping"), 
+                ("🔥 Campervan", "tempat campervan")]
+        
+        for idx, (label, search_key) in enumerate(cats):
+            with col_icon[idx]:
+                # Tombol Kategori yang langsung memicu pencarian
+                if st.button(label, key=f"cat_{idx}", use_container_width=True):
+                    st.session_state.query_input = search_key
+                    st.rerun()
+        
+        # --- REKOMENDASI POPULER ---
         st.write(""); st.subheader("🔥 Destinasi Terpopuler")
         conn = db.get_connection()
-        df_top = pd.read_sql_query("SELECT * FROM tempat ORDER BY rating_gmaps DESC LIMIT 4", conn); conn.close()
+        # Ambil 4 tempat dengan rating tertinggi yang memiliki foto (biar cantik)
+        df_top = pd.read_sql_query("SELECT * FROM tempat WHERE photo_url != '' ORDER BY rating_gmaps DESC LIMIT 4", conn)
+        # Jika kosong, ambil apa adanya
+        if df_top.empty:
+            df_top = pd.read_sql_query("SELECT * FROM tempat ORDER BY rating_gmaps DESC LIMIT 4", conn)
+        conn.close()
+        
         cols = st.columns(4)
         for i, row in df_top.iterrows():
             with cols[i]:
@@ -288,12 +313,20 @@ if st.session_state.page == "home":
                     st.caption(f"📍 {row['lokasi']}")
                     st.markdown(f"⭐ {row['rating_gmaps']}")
                     
+                    # Harga Preview
                     sp = "Rp 15.000"
-                    try: 
-                        import json
-                        hl = json.loads(row['harga_json'])
-                        if hl: sp = f"Rp {min([int(x['harga']) for x in hl]):,}".replace(",", ".")
+                    conn2 = db.get_connection()
+                    try:
+                        # Coba ambil harga terendah dari tabel harga
+                        min_p = conn2.execute("SELECT MIN(harga) FROM harga WHERE tempat_id=?", (row['id'],)).fetchone()[0]
+                        if min_p and min_p > 0: sp = f"Rp {min_p:,}".replace(",", ".")
+                        else:
+                            # Fallback ke JSON jika tabel kosong
+                            import json
+                            hl = json.loads(row['harga_json']) if row['harga_json'] else []
+                            if hl: sp = f"Rp {min([int(x['harga']) for x in hl]):,}".replace(",", ".")
                     except: pass
+                    conn2.close()
                     
                     st.markdown(f"<div style='color:#e67e22; font-weight:bold'>{sp}</div>", unsafe_allow_html=True)
                     if st.button("Detail", key=f"d_{row['id']}", use_container_width=True):
@@ -339,16 +372,41 @@ elif st.session_state.page == "tickets":
 elif st.session_state.page == "admin":
     st.title("Admin Panel")
     if st.session_state.user and st.session_state.user['role']=='admin':
-        # GRAFIK PENCARIAN
-        st.subheader("📈 Statistik Pencarian")
+        # GRAFIK PENCARIAN (AUDIT TRAIL)
+        st.subheader("🔍 Audit Pencarian (Debug Info)")
         try:
             df_hist = db.get_search_history(limit=50)
             if not df_hist.empty:
-                st.dataframe(df_hist, use_container_width=True)
-                if 'jumlah_hasil' in df_hist.columns:
-                    st.bar_chart(df_hist.set_index('query')['jumlah_hasil'])
-            else: st.info("Belum ada data.")
-        except Exception as e: st.error(f"Error grafik: {e}")
+                # Tampilkan tabel lengkap dengan info Intent & Region
+                st.dataframe(
+                    df_hist, 
+                    column_config={
+                        "query_user": "Input User",
+                        "query_bersih": "Dibaca Mesin",
+                        "intent": "Intent", 
+                        "region": "Region",
+                        "hasil_teratas": "Top Result",
+                        "jumlah_hasil": "Jml",
+                        "durasi_detik": st.column_config.NumberColumn("Detik", format="%.4f")
+                    },
+                    use_container_width=True
+                )
+                
+                st.write("")
+                st.subheader("📈 Tren Pencarian")
+                col_chart1, col_chart2 = st.columns(2)
+                with col_chart1:
+                    st.caption("Frekuensi Kata Kunci")
+                    if 'jumlah_hasil' in df_hist.columns:
+                        st.bar_chart(df_hist.set_index('query_user')['jumlah_hasil'])
+                with col_chart2:
+                    st.caption("Sebaran Region")
+                    if 'region' in df_hist.columns and not df_hist['region'].isna().all():
+                        region_counts = df_hist['region'].value_counts()
+                        st.bar_chart(region_counts)
+                        
+            else: st.info("Belum ada data pencarian.")
+        except Exception as e: st.error(f"Error load history: {e}")
 
         st.divider()
         df = db.get_all_bookings_admin()

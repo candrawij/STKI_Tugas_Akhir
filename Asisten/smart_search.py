@@ -6,7 +6,7 @@ import sys
 from gensim.models import Word2Vec
 from sklearn.metrics.pairwise import cosine_similarity
 
-# --- 1. SETUP PATH ABSOLUT ---
+# --- 1. SETUP PATH ---
 CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
 BASE_DIR = os.path.dirname(CURRENT_DIR)
 MODEL_PATH = os.path.join(BASE_DIR, 'Assets', 'word2vec.model')
@@ -18,17 +18,13 @@ except ImportError:
     sys.path.append(BASE_DIR)
     from Asisten.db_handler import db
 
-# Konstanta
-WEIGHT_SEMANTIC = 0.3
-WEIGHT_KEYWORD = 0.7
-
 class SmartSearchEngine:
     def __init__(self):
         self.model = None
         self.df = None
         self.doc_vectors = None
         self.is_ready = False
-        self.vector_size = 100 # Default jika model gagal load
+        self.vector_size = 100 
         
         self.load_resources()
 
@@ -51,41 +47,44 @@ class SmartSearchEngine:
             print(f"❌ DB Error: {e}")
             return
 
-        # 2. Load Model & Cek Dimensi
+        # 2. Load Model
         if os.path.exists(MODEL_PATH):
             try: 
                 self.model = Word2Vec.load(MODEL_PATH)
-                self.vector_size = self.model.vector_size # AMBIL UKURAN ASLI MODEL
-                print(f"✅ Model Loaded. Vector Size: {self.vector_size}")
-            except Exception as e: 
-                print(f"❌ Model Corrupt: {e}")
-        else:
-            print(f"❌ Model tidak ditemukan di: {MODEL_PATH}")
+                self.vector_size = self.model.vector_size
+            except: pass
         
         # 3. Vectorization
         if not self.df.empty and self.model:
-            # Gunakan list comprehension dengan np.stack agar lebih aman
             vectors = [self.get_vector(t) for t in self.df['teks_bersih']]
-            self.doc_vectors = np.vstack(vectors) # vstack lebih aman untuk array list
+            self.doc_vectors = np.vstack(vectors)
             self.is_ready = True
 
     def get_vector(self, text):
-        # Gunakan ukuran dinamis (self.vector_size), JANGAN hardcode 100
         if not self.model: return np.zeros(self.vector_size)
-        
         words = str(text).split()
-        # Ambil vektor kata yang dikenal
         valid_vectors = [self.model.wv[w] for w in words if w in self.model.wv]
-        
-        if not valid_vectors: 
-            return np.zeros(self.vector_size) # Return vector nol dengan ukuran yg benar
-        
+        if not valid_vectors: return np.zeros(self.vector_size)
         return np.mean(valid_vectors, axis=0)
 
+    # --- FUNGSI PENCARIAN (Updated Return Type) ---
     def search(self, query, top_k=20):
-        if not self.is_ready: return pd.DataFrame()
+        """
+        Mengembalikan: (DataFrame Hasil, Debug Dictionary)
+        """
+        debug_info = {
+            "query_original": query,
+            "query_clean": "",
+            "top_result": "-"
+        }
 
-        clean_query = query.lower()
+        if not self.is_ready: return pd.DataFrame(), debug_info
+
+        # 1. Cleaning & Debug Data
+        clean_query = re.sub(r'[^a-z0-9\s]', '', query.lower())
+        debug_info['query_clean'] = clean_query
+
+        # 2. Proses AI
         query_vec = self.get_vector(clean_query).reshape(1, -1)
         
         # A. Semantic Score
@@ -101,7 +100,7 @@ class SmartSearchEngine:
         # Final Score
         final_scores = (semantic_scores * 0.4) + (keyword_scores * 0.3) + (name_scores * 0.3)
         
-        # Result Formatting
+        # 3. Formatting
         top_indices = final_scores.argsort()[::-1][:top_k*2]
         results = []
         seen = set()
@@ -109,7 +108,7 @@ class SmartSearchEngine:
         for idx in top_indices:
             if final_scores[idx] > 0.01:
                 nama = self.df.iloc[idx]['nama']
-                if nama in seen: continue # Deduplikasi manual
+                if nama in seen: continue
                 seen.add(nama)
                 
                 results.append({
@@ -120,4 +119,12 @@ class SmartSearchEngine:
                 })
                 if len(results) >= top_k: break
         
-        return pd.DataFrame(results)
+        df_res = pd.DataFrame(results)
+        
+        # Update Debug Info
+        if not df_res.empty:
+            debug_info['top_result'] = df_res.iloc[0]['Nama Tempat']
+        else:
+            debug_info['top_result'] = "Tidak ditemukan"
+
+        return df_res, debug_info

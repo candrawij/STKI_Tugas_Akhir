@@ -5,7 +5,6 @@ import json
 import hashlib
 from datetime import datetime
 
-# Path Database
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DB_PATH = os.path.join(BASE_DIR, 'camping.db')
 
@@ -18,89 +17,36 @@ class DBHandler:
         return sqlite3.connect(self.db_path, check_same_thread=False)
 
     def init_tables(self):
-        conn = self.get_connection()
-        cursor = conn.cursor()
-        
-        # 1. Tabel Users
-        cursor.execute('''
-            CREATE TABLE IF NOT EXISTS users (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                username TEXT UNIQUE NOT NULL,
-                password TEXT NOT NULL,
-                role TEXT DEFAULT 'user',
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-            )
-        ''')
-        
-        # 2. Tabel Bookings
-        cursor.execute('''
-            CREATE TABLE IF NOT EXISTS bookings (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                user_id INTEGER,
-                tempat_id INTEGER,
-                tanggal_checkin TEXT,
-                jumlah_orang INTEGER,
-                total_harga REAL,
-                status TEXT DEFAULT 'PENDING',
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                FOREIGN KEY(user_id) REFERENCES users(id),
-                FOREIGN KEY(tempat_id) REFERENCES tempat(id)
-            )
-        ''')
-        
-        # 3. Tabel Riwayat (SESUAI REQUEST ANDA)
-        # Kolom: id, waktu, query_user, jumlah_hasil, durasi_detik
-        cursor.execute('''
-            CREATE TABLE IF NOT EXISTS riwayat (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                waktu TEXT,
-                query_user TEXT,
-                jumlah_hasil INTEGER,
-                durasi_detik REAL DEFAULT 0.0
-            )
-        ''')
-        
-        # Seed Admin jika belum ada
         try:
-            cursor.execute("SELECT * FROM users WHERE username='admin'")
-            if not cursor.fetchone():
-                h_pw = hashlib.sha256("admin123".encode()).hexdigest()
-                cursor.execute("INSERT INTO users (username, password, role) VALUES (?, ?, ?)", 
-                               ('admin', h_pw, 'admin'))
-        except: pass
-        
-        conn.commit()
-        conn.close()
+            import sys
+            sys.path.append(os.path.join(BASE_DIR, 'scripts'))
+            import setup_db
+            setup_db.create_tables()
+        except:
+            pass # Fallback handled by setup_db if available
 
-    # ================= LOGGING PENCARIAN (PERBAIKAN UTAMA) =================
-    
-    def log_search(self, query, count, duration=0.0):
-        """Mencatat history pencarian ke database"""
+    # ================= LOGGING PENCARIAN =================
+    def log_search(self, query, query_clean, count, top_result, duration=0.0, intent=None, region=None):
         conn = self.get_connection()
         try:
-            # Gunakan kolom 'query_user' dan 'durasi_detik'
             conn.execute(
-                "INSERT INTO riwayat (waktu, query_user, jumlah_hasil, durasi_detik) VALUES (?, ?, ?, ?)", 
-                (datetime.now().strftime("%Y-%m-%d %H:%M:%S"), query, count, duration)
+                """INSERT INTO riwayat 
+                   (waktu, query_user, query_bersih, intent, region, jumlah_hasil, hasil_teratas, durasi_detik) 
+                   VALUES (?, ?, ?, ?, ?, ?, ?, ?)""", 
+                (datetime.now().strftime("%Y-%m-%d %H:%M:%S"), query, query_clean, intent, region, count, top_result, duration)
             )
             conn.commit()
-        except Exception as e:
-            print(f"❌ Gagal Log Search: {e}")
-        finally:
-            conn.close()
+        except Exception as e: print(f"❌ Log Error: {e}")
+        finally: conn.close()
 
     def get_search_history(self, limit=50):
         conn = self.get_connection()
         try:
-            # Select kolom yang benar
-            df = pd.read_sql_query(f"SELECT waktu, query_user as query, jumlah_hasil, durasi_detik FROM riwayat ORDER BY id DESC LIMIT {limit}", conn)
-            return df
-        except:
-            return pd.DataFrame()
-        finally:
-            conn.close()
+            return pd.read_sql_query(f"SELECT waktu, query_user, intent, region, jumlah_hasil, hasil_teratas FROM riwayat ORDER BY id DESC LIMIT {limit}", conn)
+        except: return pd.DataFrame()
+        finally: conn.close()
 
-    # ================= TEMPAT & DETAIL =================
+    # ================= TEMPAT & DETAIL (PERBAIKAN UTAMA DI SINI) =================
     def get_place_by_name(self, name):
         conn = self.get_connection()
         res = conn.execute("SELECT id FROM tempat WHERE nama LIKE ? LIMIT 1", (f"%{name}%",)).fetchone()
@@ -112,21 +58,32 @@ class DBHandler:
         conn.row_factory = sqlite3.Row
         c = conn.cursor()
         
+        # 1. Info Utama
         info = c.execute("SELECT * FROM tempat WHERE id = ?", (place_id,)).fetchone()
         info = dict(info) if info else {}
         
-        # Ambil detail harga (Coba parsing JSON jika tabel harga kosong/error)
-        harga = []
-        try:
-            if info.get('harga_json'): harga = json.loads(info['harga_json'])
-        except: pass
+        # 2. Ambil Harga dari Tabel 'harga' (PRIORITAS UTAMA)
+        db_harga = c.execute("SELECT item, harga, kategori FROM harga WHERE tempat_id = ?", (place_id,)).fetchall()
         
-        # Ambil detail fasilitas
-        fasilitas = []
-        if info.get('fasilitas'): fasilitas = [f.strip() for f in info['fasilitas'].split(',')]
+        # Format ke List of Dict
+        harga_list = [{"item": h['item'], "harga": h['harga'], "kategori": h['kategori']} for h in db_harga]
+        
+        # Fallback ke JSON hanya jika tabel kosong
+        if not harga_list and info.get('harga_json'):
+            try: harga_list = json.loads(info['harga_json'])
+            except: pass
+        
+        # 3. Ambil Fasilitas dari Tabel 'fasilitas' (PRIORITAS UTAMA)
+        db_fas = c.execute("SELECT nama_fasilitas FROM fasilitas WHERE tempat_id = ?", (place_id,)).fetchall()
+        
+        fasilitas_list = [f['nama_fasilitas'] for f in db_fas]
+        
+        # Fallback ke string fasilitas di tabel tempat
+        if not fasilitas_list and info.get('fasilitas'):
+            fasilitas_list = [f.strip() for f in info['fasilitas'].split(',')]
         
         conn.close()
-        return {"info": info, "harga": harga, "fasilitas": fasilitas}
+        return {"info": info, "harga": harga_list, "fasilitas": fasilitas_list}
 
     # ================= USER & BOOKING =================
     def register_user(self, username, password):
@@ -159,15 +116,13 @@ class DBHandler:
 
     def get_user_bookings(self, uid):
         conn = self.get_connection()
-        q = "SELECT b.id, t.nama, b.tanggal_checkin, b.total_harga, b.status, b.jumlah_orang FROM bookings b JOIN tempat t ON b.tempat_id = t.id WHERE b.user_id = ? ORDER BY b.id DESC"
-        df = pd.read_sql_query(q, conn, params=(uid,))
+        df = pd.read_sql_query("SELECT b.id, t.nama, b.tanggal_checkin, b.total_harga, b.status, b.jumlah_orang FROM bookings b JOIN tempat t ON b.tempat_id = t.id WHERE b.user_id = ? ORDER BY b.id DESC", conn, params=(uid,))
         conn.close()
         return df
 
     def get_all_bookings_admin(self):
         conn = self.get_connection()
-        q = "SELECT b.id, u.username, t.nama, b.tanggal_checkin, b.total_harga, b.status FROM bookings b JOIN users u ON b.user_id = u.id JOIN tempat t ON b.tempat_id = t.id ORDER BY b.id DESC"
-        df = pd.read_sql_query(q, conn)
+        df = pd.read_sql_query("SELECT b.id, u.username, t.nama, b.tanggal_checkin, b.total_harga, b.status FROM bookings b JOIN users u ON b.user_id = u.id JOIN tempat t ON b.tempat_id = t.id ORDER BY b.id DESC", conn)
         conn.close()
         return df
 

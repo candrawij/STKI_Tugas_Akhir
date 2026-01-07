@@ -1,211 +1,113 @@
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
 
 html, body, [class*="css"] {
     font-family: 'Poppins', sans-serif;
+    color: #2d3436;
 }
 
-/* Sembunyikan elemen bawaan Streamlit */
+/* --- 1. CLEANING STREAMLIT UI --- */
 #MainMenu, header, footer {visibility: hidden;}
-.stApp { margin-top: -80px; } /* Tarik konten ke atas menutupi header asli */
+.stApp { margin-top: -60px; } /* Menarik konten ke atas */
+div[data-testid="stVerticalBlock"] { gap: 0.8rem; } /* Jarak antar elemen lebih rapi */
 
-/* NAVBAR */
-.navbar-container {
-    position: fixed;
+/* --- 2. NAVBAR STICKY (THE TRICK) --- */
+/* Ini menargetkan container pertama di Streamlit agar jadi Sticky Navbar */
+div[data-testid="stVerticalBlock"] > div:has(div[data-testid="stHorizontalBlock"]) {
+    background-color: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px); /* Efek blur kaca modern */
+    padding: 15px 0;
+    position: sticky;
     top: 0;
-    left: 0;
-    width: 100%;
-    background: white;
-    z-index: 9999;
-    padding: 15px 40px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+    z-index: 999;
+    border-bottom: 1px solid #f0f0f0;
 }
 
-.nav-logo img {
-    height: 40px; /* Ukuran Logo */
+/* Tombol Navbar (Transparan & Clean) */
+div[data-testid="stHorizontalBlock"] .stButton > button {
+    border: none !important;
+    color: #555 !important;
+    box-shadow: none !important;
+    font-weight: 500 !important;
+}
+div[data-testid="stHorizontalBlock"] .stButton > button:hover {
+    color: #0984e3 !important;
+    background-color: #f0f7fc !important;
 }
 
-.nav-links {
-    display: flex;
-    gap: 20px;
-    align-items: center;
+/* Tombol Primary (Biru - Misal tombol Cari/Booking) */
+.stButton > button[kind="primary"] {
+    background-color: #0984e3 !important;
+    border: none !important;
+    box-shadow: 0 4px 10px rgba(9, 132, 227, 0.3) !important;
+    transition: all 0.2s;
+}
+.stButton > button[kind="primary"]:hover {
+    background-color: #0077c8 !important;
+    transform: translateY(-2px);
 }
 
-.nav-link {
-    text-decoration: none;
-    color: #333;
-    font-weight: 500;
-    font-size: 14px;
-}
-
-/* Tombol Login/Register dimanipulasi lewat Python Streamlit,
-   tapi kita siapkan class wrapper-nya */
-.auth-buttons {
-    display: flex;
-    gap: 10px;
-}
-
-/* HERO SECTION */
+/* --- 3. HERO SECTION --- */
 .hero-wrapper {
-    /* Background diatur lewat Python agar bisa baca file lokal */
     background-size: cover;
     background-position: center;
-    padding: 120px 20px 80px 20px; /* Padding atas besar utk kompensasi navbar */
-    border-radius: 0 0 30px 30px;
+    padding: 100px 20px 80px 20px;
+    border-radius: 0 0 40px 40px;
     text-align: center;
     color: white;
-    margin-bottom: 40px;
-    position: relative;
+    margin-bottom: 30px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
 }
-
 .hero-overlay {
-    position: absolute;
-    top: 0; left: 0; right: 0; bottom: 0;
-    background: rgba(0, 0, 0, 0.4); /* Gelapkan gambar sedikit */
-    border-radius: 0 0 30px 30px;
-    z-index: 1;
+    position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+    background: linear-gradient(to bottom, rgba(0,0,0,0.5), rgba(0,0,0,0.2));
+    border-radius: 0 0 40px 40px; z-index: 1;
 }
+.hero-content { position: relative; z-index: 2; }
+.hero-title { font-size: 3rem; font-weight: 700; text-shadow: 0 2px 10px rgba(0,0,0,0.3); }
 
-.hero-content {
-    position: relative;
-    z-index: 2;
-}
-
-.hero-title {
-    font-size: 3rem;
-    font-weight: 700;
-    margin-bottom: 10px;
-    text-shadow: 0 2px 4px rgba(0,0,0,0.5);
-}
-
-.hero-subtitle {
-    font-size: 1.2rem;
-    margin-bottom: 40px;
-    text-shadow: 0 1px 2px rgba(0,0,0,0.5);
-}
-
-/* SEARCH BOX FLOATING */
-.search-container {
-    background: white;
+/* --- 4. MAGIC CARDS (THE SECRET SAUCE) --- */
+/* Mengubah st.container(border=True) menjadi Card Halus */
+div[data-testid="stContainer"] {
+    background-color: white;
+    border: 1px solid #f0f2f5 !important; /* Ganti border abu kasar */
+    border-radius: 16px !important;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
     padding: 20px;
-    border-radius: 15px;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-    max-width: 800px;
-    margin: 0 auto;
-    position: relative;
-    z-index: 3;
-    color: #333;
-    text-align: left;
+    transition: transform 0.2s, box-shadow 0.2s;
 }
 
-/* KATEGORI */
-.cat-container {
-    display: flex;
-    justify-content: center;
-    gap: 25px;
-    margin-top: 40px;
+/* Efek Hover pada Card */
+div[data-testid="stContainer"]:hover {
+    border-color: #0984e3 !important;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
 }
 
+/* --- 5. TYPOGRAPHY & ELEMENTS --- */
+.card-title { font-size: 1.2rem; font-weight: 700; color: #2d3436; margin-bottom: 5px; }
+.card-location { color: #636e72; font-size: 0.9rem; margin-bottom: 8px; }
+.card-rating { background: #fff3cd; color: #856404; padding: 2px 8px; border-radius: 6px; font-size: 0.8rem; font-weight: 700; }
+.card-price-label { font-size: 0.75rem; color: #aaa; text-align: right; }
+.card-price-value { font-size: 1.3rem; font-weight: 700; color: #e67e22; text-align: right; }
+
+/* Kategori Icons */
 .cat-box {
-    background: white;
-    width: 90px;
-    height: 90px;
-    border-radius: 15px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-    cursor: pointer;
-    transition: 0.3s;
-    border: 1px solid #eee;
+    display: flex; flex-direction: column; align-items: center;
+    background: #f8f9fa; border-radius: 12px; padding: 15px;
+    border: 1px solid #eee; transition: all 0.2s;
 }
+.cat-box:hover { background: #e3f2fd; transform: translateY(-3px); border-color: #0984e3; }
 
-.cat-box:hover {
-    transform: translateY(-5px);
-    border-color: #0984e3;
-}
+/* Ticket Styling */
+.ticket-header { border-bottom: 1px dashed #e0e0e0; padding-bottom: 10px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; }
+.ticket-label { font-size: 0.75rem; color: #aaa; text-transform: uppercase; }
+.ticket-value { font-size: 0.95rem; font-weight: 600; color: #2d3436; }
+.ticket-total { font-size: 1.2rem; font-weight: 700; color: #0984e3; }
 
-/* CARD POPULER */
-.card-img {
-    border-radius: 10px 10px 0 0;
-    object-fit: cover;
-}
-.card-price {
-    color: #e67e22;
-    font-weight: bold;
-    font-size: 1.1rem;
-}
-
-/* CARD HASIL PENCARIAN (HORIZONTAL) */
-.search-card {
-    background: white;
-    border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-    margin-bottom: 20px;
-    overflow: hidden;
-    transition: transform 0.2s;
-    border: 1px solid #eee;
-}
-
-.search-card:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 8px 20px rgba(0,0,0,0.12);
-}
-
-/* KITA GUNAKAN COLUMN STREAMLIT, TAPI CSS INI UNTUK MEMPERCANTIK TEXT */
-.card-title {
-    font-size: 1.2rem;
-    font-weight: 700;
-    color: #2d3436;
-    margin-bottom: 5px;
-}
-
-.card-location {
-    color: #636e72;
-    font-size: 0.9rem;
-    margin-bottom: 10px;
-}
-
-.card-rating {
-    background-color: #003580; /* Warna Booking.com */
-    color: white;
-    padding: 5px 8px;
-    border-radius: 6px 6px 6px 0;
-    font-weight: bold;
-    font-size: 0.9rem;
-    display: inline-block;
-}
-
-.card-price-label {
-    font-size: 0.8rem;
-    color: #636e72;
-    text-align: right;
-}
-
-.card-price-value {
-    font-size: 1.3rem;
-    font-weight: 700;
-    color: #e67e22;
-    text-align: right;
-}
-
-/* KITA HILANGKAN TOMBOL DEFAULT STREAMLIT AGAR NAV LEBIH BERSIH */
-.stButton > button {
-    border-radius: 8px;
-    font-weight: 500;
-}
-
-/* KHUSUS NAV BUTTON (Kita akan kasih key khusus nanti) */
-div[data-testid="stHorizontalBlock"] .stButton > button {
-    color: #333; /* Sesuaikan jika dark mode: #fff */
-    border: none;
-    box-shadow: none;
-}
-
-div[data-testid="stHorizontalBlock"] .stButton > button:hover {
-    color: #0984e3;
-    font-weight: bold;
-}
+/* Status Badges */
+.status-badge { padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; }
+.status-confirmed { background: #d4edda; color: #155724; }
+.status-pending { background: #fff3cd; color: #856404; }
+.status-rejected { background: #f8d7da; color: #721c24; }
+.fas-tag { background: #e3f2fd; color: #0984e3; padding: 4px 10px; border-radius: 15px; font-size: 0.75rem; margin-right: 5px; }
+.review-box { background: #f9f9f9; padding: 15px; border-radius: 8px; border-left: 3px solid #0984e3; font-style: italic; color: #555; }
