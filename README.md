@@ -11,6 +11,10 @@ Pilih salah satu cara di bawah ini untuk memulai sistem:
 ### ✅ OPSI 1: WEB MODERN (UTAMA)
 Tampilan antarmuka grafis yang modern dengan fitur lengkap (Search, Booking, Admin).
 
+Web bisa diakses melalui URL berikut: `https://stki-tugas-akhir.streamlit.app/`
+
+Atau bisa menggunakan cara lain yaitu:
+
 1.  **Buka Terminal** di folder proyek.
 2.  **Jalankan Perintah:**
     ```bash
@@ -50,4 +54,5 @@ Jika data pencarian atau database berantakan, reset ulang sistem dengan cara:
 | **User** | `test` | `123` |
 
 ---
+
 
