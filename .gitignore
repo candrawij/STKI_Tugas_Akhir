@@ -12,9 +12,9 @@ __pycache__/
 
 # 3. Model AI & Aset Binary (SANGAT PENTING)
 # Kita ignore model jadi agar user melakukan training ulang (menghindari error versi numpy)
-Assets/*.model
-Assets/*.model.*
-Assets/*.npy
+#Assets/*.model
+#Assets/*.model.*
+#Assets/*.npy
 # Kecuali Anda ingin menyimpan logo/gambar statis
 !Assets/*.png
 !Assets/*.jpg
